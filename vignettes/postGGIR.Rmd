@@ -1,0 +1,543 @@
+---
+title: "postGGIR"
+author: "Wei Guo"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{postGGIR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+
+
+# Introduction
+
+
+## What is GGIR?
+
+[GGIR](https://CRAN.R-project.org/package=GGIR) is an R-package to process multi-day raw accelerometer data for physical activity and sleep research. GGIR will write all output files into two sub-directories of ./meta and ./results. GGIR is increasingly being used by a number of academic institutes across the world.  
+ 
+
+## What is postGGIR?
+
+[postGGIR](https://CRAN.R-project.org/package=postGGIR) is an R-package to data processing after running GGIR for accelerometer data. In detail, all necessary R/Rmd/shell files were generated for data processing after running GGIR for accelerometer data. Then in part 1, all csv files in the GGIR output directory were read, transformed and then merged. In part 2, the GGIR output files were checked and summarized in one excel sheet. In part 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. In part 4, the cleaned activity data was imputed by the average ENMO over all the valid days for each subject. Finally, a comprehensive report of data processing was created using Rmarkdown, and the report includes few explortatory plots and multiple commonly used features extracted from minute level actigraphy data in part 5-7. This vignette provides a general introduction to postGGIR.
+
+ 
+
+
+# Setting up your work environment
+
+## Install R and RStudio
+
+[Download and install R](https://cran.r-project.org/)
+
+[Download and install RStudio](https://www.rstudio.com/products/rstudio) (optional, but recommended)
+
+Download GGIR with its dependencies, you can do this with one command from the console command line:
+
+```{R,eval=FALSE}
+install.packages("postGGIR", dependencies = TRUE)
+```
+
+## Prepare folder structure
+
+1. folder of .bin files for GGIR or a file listing all .bin files
+    - R program will check the missing in the GGIR output by comparing with all raw .bin files
+    
+2. foder of the GGIR output with two sub-folders 
+    - meta (./basic, ./csv, etc)     
+    - results (part*summary*.csv)       
+ 
+
+
+# Quick start
+
+
+## Create a template shell script of postGGIR 
+
+
+```{R,eval=FALSE}
+library(postGGIR)
+create.postGGIR()
+```
+
+
+The function will create a template shell script of postGGIR in the current directory, names as *STUDYNAME_part0.maincall.R*.
+ 
+
+
+```{bash, eval=FALSE} 
+cat STUDYNAME_part0.maincall.R
+```
+
+
+```{r,eval=FALSE}
+options(width=2000) 
+argv = commandArgs(TRUE);  
+print(argv) 
+print(paste("length=",length(argv),sep=""))  
+mode<-as.numeric(argv[1])  
+print(c("mode =", mode))
+ 
+#########################################################################  
+# (user-define 1) you got to redefine this according different study!!!!
+######################################################################### 
+# colaus 
+filename2id.1<-function(x) {
+  y1<-unlist(strsplit(x,"\\_"))[1]
+  y2<-unlist(strsplit(y1,"\\."))[1]
+  return(y2)
+} 
+ 
+# nimh (use csv file =c("filename","ggirID")) 
+filename2id.2<-function(x) {
+  d<-read.csv("./postGGIR/inst/example/filename2id.csv",head=1,stringsAsFactors=F)
+  y1<-which(d[,"filename"]==x)
+  if (length(y1)==0) stop(paste("Missing ",x," in filename2id.csv file",sep=""))
+  if (length(y1)>=1) y2<-d[y1[1],"newID"] 
+  return(as.character(y2))
+} 
+
+
+#########################################################################  
+#  main call
+######################################################################### 
+  
+call.afterggir<-function(mode,rmDup=FALSE,filename2id=filename2id.1){ 
+
+library(postGGIR) 
+#################################################   
+# (user-define 2) Fill in parameters of your ggir output
+#################################################  
+currentdir = 
+studyname =
+bindir =
+binfile.list = NULL
+outputdir = 
+ 
+epochIn = 5
+epochOut = 5
+flag.epochOut = 60
+use.cluster = FALSE
+log.multiplier = 9250
+QCdays.alpha = 7
+QChours.alpha = 16 
+useIDs.FN<-NULL 
+setwd(currentdir) 
+#########################################################################  
+#   remove duplicate sample IDs for plotting and feature extraction 
+######################################################################### 
+if (mode==3 & rmDup){
+# step 1: read ./summary/*remove_temp.csv file (output of mode=2)
+keep.last<-TRUE #keep the latest visit for each sample
+sumdir<-paste(currentdir,"/summary",sep="")  
+setwd(sumdir)  
+inFN<-paste(studyname,"_samples_remove_temp.csv",sep="")
+useIDs.FN<-paste(sumdir,"/",studyname,"_samples_remove.csv",sep="")  
+
+#################################################   
+# (user-define 3 as rmDup=TRUE)  create useIDs.FN file
+#################################################  
+# step 2: create the ./summary/*remove.csv file manually or by R commands
+d<-read.csv(inFN,head=1,stringsAsFactors=F)
+d<-d[order(d[,"Date"]),]
+d<-d[order(d[,"newID"]),]
+d[which(is.na(d[,"newID"])),]
+S<-duplicated(d[,"newID"],fromLast=keep.last) #keep the last copy for nccr
+d[S,"duplicate"]<-"remove"
+write.csv(d,file=useIDs.FN,row.names=F) 
+}  
+#########################################################################  
+#  maincall
+#########################################################################  
+setwd(currentdir)  
+afterggir(mode=mode,useIDs.FN,currentdir,studyname,bindir,
+outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,QCdays.alpha=QCdays.alpha,QChours.alpha=QChours.alpha,Rversion="R/3.6.3",filename2id=filename2id) 
+} 
+##############################################
+call.afterggir(mode)   
+##############################################  
+#   Note:   call.afterggir(mode=0)
+#        mode =0 : creat sw/Rmd file
+#        mode =1 : data transform using cluster or not
+#        mode =2 : summary
+#        mode =3 : clean 
+#        mode =4 : impu
+```
+
+## Edit shell script 
+
+Three places were marked as "user-define" and need to be edited by user in the *STUDYNAME_part0.maincall.R* file. Please rename the file by replacing your real studyname after the edition.
+
+### 1. Define the function filename2id( )    
+This user-defined function will change the filename of the raw accelerometer file to the short ID. For example, the first example change "0002__026907_2016-03-11 13-05-59.bin" to new ID of "0002". If you prefer to define new ID by other way, you could create a .CSV file including "filename" and "newID" at least and then defined this function as the second example. The new variable of "newID", included in the output files, could be used as the key ID in the summary report of postGGIR and be used to define the duplicate samples as well. 
+
+
+### 2. Parameters of shell script  
+User needs to define the following parameters as follows,
+ 
+ 
+
+Variables	| Description
+----------------- | ----------------------------------------------------
+currentdir | Directory where the output needs to be stored. Note that this directory must exist  
+studyname | Specify the study name that used in the output file names.  Give this variable an appropriate name as it will be used later to specify output file names. 
+bindir | Directory where the accelerometer files are stored or list   
+binfile.list | File list of bin files when running GGIR. Default is NULL, but it has to be a filename in the .csv format when bindir=NULL.   
+outputdir | Directory where the GGIR output was stored.  
+epochIn | Epoch size to which acceleration was averaged (seconds) in GGIR output. Defaut is 5 seconds.
+epochOut | Epoch size to which acceleration was averaged (seconds) in part1. Defaut is 5 seconds.
+flag.epochOut | Epoch size to which acceleration was averaged (seconds) in part 3. Defaut is 60 seconds.  
+log.multiplier | The coefficient used in the log transformation of the ENMO data, i.e. log( log.multiplier * ENMO + 1), which have been used in part2a_postGGIR.report and part5. Defaut is 9250. 
+use.cluster | Specify if part1 will be done by parallel computing. Default is TRUE, and the CSV file in GGIR output will be merged for every 20 files first, and then combined for all. 
+QCdays.alpha | Minimum required number of valid days in subject specific analysis as a quality control step in part2. Default is 7 days. 
+QChours.alpha | Minimum required number of valid hours in day specific analysis as a quality control step in part2. Default is 16 hours.  
+  
+
+
+
+### 3. Subset of samples (optional)    
+The postGGIR package not only simply transform/merge the activity and sleep data, but it also can do some prelimary data analysis such as principle componet analysis and feature extraction. Therefore, the basic data clean will be processed first as follows,     
+
+   - data clean by removing valid days/samples defined by minimum required number of valid hours/days in the activity data   
+   - remove duplicate samples  
+
+If you prefer to use all samples, just skip this part and use `rmDup=FALSE` as the default. Otherwise, if you want to remove some samples such as duplicates, there are two ways as follows,
+
+   -  Edit R codes of "step 2" in this part. For example, the template will keep the later copy for duplicate samples    
+   -  Remove R codes of "step 2" in this part, and create *studyname_samples_remove.csv* file by filling "remove" in the "duplicate" column in the template file of *studyname_samples_remove_temp.csv*. The data will be kept unless duplicate="remove".  
+
+
+
+## Run R script 
+ 
+
+```{R,eval=FALSE} 
+call.afterggir(mode,rmDup=FALSE)   
+```
+
+
+
+Variables	| Description
+----------------- | ----------------------------------------------------
+rmDup | Set rmDup = TRUE if user want to remove some samples such as duplicates. Set rmDup = FALSE if user want to keep all samples.  
+mode | Specify which of the five parts need to be run, e.g. mode = 0 makes that all R/Rmd/sh files are generated for other parts. When mode = 1, all csv files in the GGIR output directory were read, transformed and then merged. When mode = 2, the GGIR output files were checked and summarized in one excel sheet. When mode = 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. When mode = 4, the cleaned data was imputed.  
+
+
+
+## Run script in a cluster
+
+```{R,eval=FALSE} 
+#!/bin/bash
+#
+#$ -cwd
+#$ -j y
+#$ -S /bin/bash
+  source ~/.bash_profile
+
+   cd /postGGIR/inst/example/afterGGIR; 
+   module load R ; 
+     R --no-save --no-restore --args  < studyname_ggir9s_postGGIR.pipeline.maincall.R  0
+     R --no-save --no-restore --args  < studyname_ggir9s_postGGIR.pipeline.maincall.R  1
+     R --no-save --no-restore --args  < studyname_ggir9s_postGGIR.pipeline.maincall.R  2
+     R --no-save --no-restore --args  < studyname_ggir9s_postGGIR.pipeline.maincall.R  3
+     R --no-save --no-restore --args  < studyname_ggir9s_postGGIR.pipeline.maincall.R  4 
+
+     R -e "rmarkdown::render('part5_studyname_postGGIR.report.Rmd'   )" 
+     R -e "rmarkdown::render('part6_studyname_postGGIR.nonwear.report.Rmd'   )" 
+     R -e "rmarkdown::render('part7a_studyname_postGGIR_JIVE_1_somefeatures.Rmd'   )" 
+     R -e "rmarkdown::render('part7b_studyname_postGGIR_JIVE_2_allfeatures.Rmd'   )" 
+     R -e "rmarkdown::render('part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd'   )" 
+
+```
+# Inspecting the results
+ 
+## Output of part 0
+  +  Command = call.afterggir(mode=0) 
+  +  Output folder = ./
+
+Output |    Description
+-------------- | ------------------------------------------------ 
+part1_data.transform.R (use.cluster=TRUE, optional) | R code for data transformation and merge for every 20 files in each partition. When the number of .bin files is large ( > 1000), the data merge could take long time, user could split the job and submit the job to a cluster for parallel computing.
+part1_data.transform.sw  (use.cluster=TRUE, optional) | Submit the job to a cluster for parallel computing
+part1_data.transform.merge.sw  (use.cluster=TRUE, optional) | Merge all partitions for the ENMO and ANGLEZ data  
+part5_studyname_postGGIR.report.Rmd | 	R markdown file for generate  a comprehensive report of data processing  and explortatory plots.
+part6_studyname_postGGIR.nonwear.report.Rmd | 	R markdown file for generate  a report of nonwear score.
+part7a_studyname_postGGIR_JIVE_1_somefeatures.Rmd | 	Extract some features from the actigraphy data using R
+part7b_studyname_postGGIR_JIVE_2_allfeatures.Rmd | 	Extract other features from the GGIR output and merge all features together
+part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd | 	Combine all features into one single excel file. This is optional since it might be killed due to the issue of out of memory in a cluster.
+part7d_studyname_postGGIR_JIVE_4_outputReport.Rmd | 	Perform JIVE Decomposition for All Features using r.jive
+part9_swarm.sh | shell script to submit all jobs to the cluster
+
+
+## Output of part 1
+  +  Command = call.afterggir(mode=1) 
+  +  Output folder = ./data
+ 
+Output | Description
+-------------- | --------------------------------------- 
+studyname_filesummary_csvlist.csv | File list in the ./csv folder of GGIR
+studyname_filesummary_Rdatalist.csv | File list in the ./basic folder of GGIR	
+All_studyname_ANGLEZ.data.csv | Raw data of ANGLEZ after merge
+All_studyname_ENMO.data.csv | Raw data of ENMO after merge	
+nonwearscore_studyname_f0_f1_Xs.csv | Data matrix of nonwearscore
+nonwearscore_studyname_f0_f1_Xs.pdf | Plots for nonwearscore
+plot.nonwearVSnvalidhours.csv | Nonwear data for plot
+plot.nonwearVSnvalidhours.pdf | Nonwear plots	
+lightmean_studyname_f0_f1_Xs.csv | Data matrix of lightmean
+lightpeak_studyname_f0_f1_Xs.csv | Data matrix of lightpeak
+temperaturemean_studyname_f0_f1_Xs.csv | Data matrix of temperaturemean
+clippingscore_studyname_f0_f1_Xs.csv | Raw data of clippingscore
+EN_studyname_f0_f1_Xs.csv | Data matrix of EN
+
+ 
+
+*f0 and f1 are the file index to start and finish with  
+*Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output
+
+## Output of part 2
+  +  Command = call.afterggir(mode=1) 
+  +  Output folder = ./summary
+ 
+Output | Description
+-------------- | ----------------------------------------- 
+studyname_ggir_output_summary.xlsx | Description of all accelerometer files in the GGIR output.  This excel file includs 9 pages as follows,  (1) List of files in the GGIR output (2) Summary of files (3) List of duplicate IDs  (4)  ID errors (5) Number of valid days (6) Table of number of valid/missing days (7) Missing patten (8) Frequency of the missing pattern  (9) Description of all accelerometer files.
+part2daysummary.info.csv | Intermediate results for description of each accelerometer file.
+studyname_ggir_output_summary_plot.pdf | Some plots such as the number of valid days, which were included in the part2a_studyname_postGGIR.report.html file as well.
+studyname_samples_remove_temp.csv | Create studyname_samples_remove.csv file by filling "remove" in the "duplicate" column in this template. If duplicate="remove",  the accelerometer files will not be used in the data analysis of part5.
+
+
+
+## Output of part 3
+  +  Command = call.afterggir(mode=1) 
+  +  Output folder = ./data
+ 
+Output | Description
+-------------- | -------------------------------------- 
+flag_All_studyname_ANGLEZ.data.Xs.csv | Adding flags for data cleaning of the raw ANGLEZ data
+flag_All_studyname_ENMO.data.Xs.csv | Adding flags for data cleaning of the raw ENMO data
+IDMatrix.flag_All_studyname_ENMO.data.60s.csv | ID matrix
+
+
+
+*Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output
+
+
+
+## Output of part 4
+  +  Command = call.afterggir(mode=1) 
+  +  Output folder = ./data
+ 
+Output | Description
+-------------- | -------------------------------------------------------------------------------- 
+impu.flag_All_studyname_ENMO.data.60s.csv | Imputation data for the merged ENMO data, and the missing values were imputated by the average ENMO over all the valid days for each subject. 
+	
+
+
+## Output of part 5
+  +  Command = part5_studyname_postGGIR.report.Rmd 
+  +  Output folder = ./ 
+ 
+Output | Description
+-------------- | --------------------------------------------------------------------------------  
+part5_studyname_postGGIR.report.html | A comprehensive report of data processing  and explortatory plots.
+
+
+## Output of part 6
+  +  Command = part6_studyname_postGGIR.nonwear.report.Rmd
+  +  Output folder = ./ 
+
+Folder | Output | Description
+-------------- | -------------- | -------------------------------------------------------------------------------- 
+./ | part6_studyname_postGGIR.nonwear.report.html | A report of nonwear score.
+./data | JIVEraw_nonwearscore_studyname_f0_f1_Xs.csv | Imputation data matrix of nonwearscore (1/0)
+./data | JIVEimpu_nonwearscore_studyname_f0_f1_Xs.csv | Data matrix of nonwearscore (1/0/NA)
+
+
+
+*f0 and f1 are the file index to start and finish with  
+*Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output
+
+
+## Output of part 7a
+  +  Command = part7a_studyname_postGGIR_JIVE_1_somefeatures.Rmd
+  +  Output folder = ./ 
+
+Output | Description
+-------------- | --------------------------------------------------------------------------------
+part7_studyname_all_features_dictionary.xlsx | Description of features
+part7a_studyname_postGGIR_JIVE_1_somefeatures.html | Extract some features from the actigraphy data using R
+part7a_studyname_some_features_page1_features.csv | List of some features
+part7a_studyname_some_features_page2_face_day_PCs.csv | Function PCA at the day level using fpca.face( )
+part7a_studyname_some_features_page3_face_subject_PCs.csv | Function PCA at the subject level using fpca.face( )
+part7a_studyname_some_features_page4_denseFLMM_day_PCs.csv | Function PCA at the day level using denseFLMM( )
+part7a_studyname_some_features_page5_denseFLMM_subject_PCs.csv | Function PCA at the subject level using denseFLMM( )
+
+
+## Output of part 7b
+  +  Command = part7b_studyname_postGGIR_JIVE_2_allfeatures.Rmd
+  +  Output folder = ./ 
+
+
+Output | Description
+-------------- | --------------------------------------------------------------------------------
+part7b_studyname_postGGIR_JIVE_2_allfeatures.html | Extract other features from the GGIR output and merge all features together
+part7b_studyname_all_features_1.csv | Raw data of all features  
+part7b_studyname_all_features_2.csv | Keep sample with valid ENMO inputs
+part7b_studyname_all_features_2.csv.log | Log file of each variable of part5b_studyname_all_features_2.csv
+plot_part7b_studyname_all_features_2.csv.pdf | Plot of each variable of part5b_studyname_all_features_2.csv
+part7b_studyname_all_features_3.csv | Average variable at the subject level
+part7b_studyname_all_features_3.csv.log | Log file of each variable of part5b_studyname_all_features_3.csv
+plot_part7b_studyname_all_features_3.csv.pdf | Plot of each variable of part5b_studyname_all_features_3.csv
+part7b_studyname_all_features_4.csv | subject level SD of each feature
+
+
+## Output of part 7c
+  +  Command = part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd
+  +  Output folder = ./ 
+
+
+Output | Description
+-------------- | --------------------------------------------------------------------------------
+part7c_studyname_postGGIR_JIVE_3_excelReport.html | Combine all features into one single excel file. This is optional since it might be killed due to the issue of out of memory in a cluster.
+
+
+
+## Output of part 7d
+  +  Command = part7d_studyname_postGGIR_JIVE_4_outputReport.Rmd 
+  +  Output folder = ./  
+
+Output | Description
+-------------- | --------------------------------------------------------------------------------
+part7d_studyname_postGGIR_JIVE_4_outputReport.html | Perform JIVE Decomposition for All Features using r.jive
+part7d_studyname_jive_Decomposition.csv | Joint and individual structure estimates
+part7d_studyname_jive_predScore.csv | PCA scores of JIVE ( missing when jive.predict failes)
+part7d_studyname_jive_predScore.csv | PCA scores of JIVE ( missing when jive.predict failes)
+
+
+
+
+## Output of part 7e
+  +  Command = part7e_studyname_postGGIR_JIVE_5_somefeatures_weekday.Rmd
+  +  Output folder = ./  
+
+Output | Description
+-------------- | ------------------------------------- 
+part7e_studyname_some_features_page1.csv | Perform JIVE Decomposition for All Features using r.jive
+part7e_weekday_studyname_all_features_3.csv | subject level mean of each feature on weekday
+part7e_weekday_studyname_some_features_page4_denseFLMM_day_PCs.csv | Function PCA at the day level using denseFLMM( ) on weekday
+part7e_weekday_studyname_some_features_page5_denseFLMM_subject_PCs.csv | Function PCA at the subject level using denseFLMM( ) on weekday
+part7e_weekend_studyname_all_features_3.csv | subject level mean of each feature on weekend
+part7e_weekend_studyname_some_features_page4_denseFLMM_day_PCs.csv | Function PCA at the day level using denseFLMM( ) on weekend
+part7e_weekend_studyname_some_features_page5_denseFLMM_subject_PCs.csv | Function PCA at the subject level using denseFLMM( ) on weekend
+
+
+
+
+## Description of variables in the output data
+
+Variable | Description
+-------------- | --------------------------------------------------------------------------------
+filename | accelerometer file name 
+Date | date recored from the GGIR part2.summary file 
+id | IDs recored from the GGIR part2.summary file 
+calender_date | date in the format of yyyy-mm-dd 
+N.valid.hours | number of hours with valid data recored from the part2_daysummary.csv file in the GGIR output 
+N.hours | number of hours of measurement recored from the part2_daysummary.csv file in the GGIR output 
+weekday | day of the week-Day of the week 
+measurementday | day of measurement-Day number relative to start of the measurement 
+newID | new IDs defined as the user-defined function of filename2id(), e.g. substrings of the filename 
+Nmiss_c9_c31 | number of NAs from the 9th to 31th column in the part2_daysummary.csv file in the GGIR output
+missing | "M" indicates missing for an invalid day, and  "C" indicates completeness for a valid day 
+Ndays | number of days of measurement  
+ith_day | rank of the measurementday, for example, the value is 1,2,3,4,-3,-2,-1 for measurementday = 1,...,7 
+Nmiss | number of missing (invalid) days  
+Nnonmiss | number of non-missing (valid) days 
+misspattern | indicators of missing/nonmissing for all measurement days at the subject level 
+RowNonWear | number of columnns in the non-wearing matrix 
+NonWearMin | number of minutes of non-wearing
+remove16h7day | indicator of a key qulity control output. If remove16h7day=1, the day need to be removed. If remove16h7day=0, the day need to be kept.
+duplicate | If duplicate="remove",  the accelerometer files will not be used in the data analysis of part5.
+ImpuMiss.b | number of missing values on the ENMO data before imputation
+ImpuMiss.a | number of missing values on the ENMO data after imputation
+KEEP | The value is "keep"/"remove", e.g. KEEP="remove" if remove16h7day=1 or duplicate="remove" or ImpuMiss.a>0
+
+
+
+
+## Description of features of domains of physical activity, sleep and circadian rhythmicity
+
+**Sleep Domain**  
+
+
+```{r,echo=F}
+library(xlsx)   
+library(knitr)  
+library(kableExtra)  
+
+
+feaFN<-system.file("template", "features.dictionary.xlsx", package = "postGGIR")  
+#feaFN<- "features.dictionary.xlsx"   
+  
+dict<-read.xlsx(feaFN,head=1,sheetName="dictionary",stringsAsFactors=F)
+dict.SL<-dict[which(dict[,"Domain"]=="SL"),c("Variable","Description")]
+dict.PA<-dict[which(dict[,"Domain"]=="PA"),c("Variable","Description")] 
+dict.CR<-dict[which(dict[,"Domain"]=="CR"),c("Variable","Description")]
+
+row.names(dict.SL)<-NULL
+row.names(dict.PA)<-NULL
+row.names(dict.CR)<-NULL
+
+kable(dict.SL) %>%
+     kable_styling(bootstrap_options = c("striped", "hover"))
+```
+ 
+
+
+**Physical Activity Domain**      
+ 
+```{r,echo=F}
+kable(dict.PA) %>%
+     kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+**Circadian Rhythmicity Domain**    
+  
+```{r,echo=F}
+kable(dict.CR) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+
+```{r,eval=FALSE,include=FALSE}
+library(xlsx)
+library(dplyr)
+library(kableExtra)
+library(knitr)
+
+d1<-read.xlsx("postGGIR.output.description.xlsx",sheetName="output.format") 
+d2<-read.xlsx("postGGIR.output.description.xlsx",sheetName="output.variable")
+d3<-read.xlsx("postGGIR.output.description.xlsx",sheetName="features")
+ 
+
+cd /data/guow4/project0/GGIR/postGGIR/postGGIR_compile/postGGIR3.0/vignettes     
+R -e "rmarkdown::render('postGGIR.Rmd'   )" 
+
+
+  
+```
+
+
+
+Reference:
+
+-  
