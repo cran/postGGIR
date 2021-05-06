@@ -90,6 +90,7 @@ inFN1<-sort(inFN0)
 } else { 
 files0<-list.files(path = paste(ggir.dir,"/meta/basic",sep="") ,recursive = TRUE) 
 inFN0 <-gsub(".RData","",files0)  
+inFN0 <-gsub("meta_","",inFN0)  
 inFN1<-sort(inFN0) 
 }
 

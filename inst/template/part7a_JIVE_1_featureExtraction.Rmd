@@ -62,19 +62,20 @@ M10windowFN<-paste("./data/clean.impu.flag_All_",studyname,"_ENMO.data.",epochOu
 
 
 ```{r x1,include=FALSE} 
-# 0a) read data--------------------------
-#install.packages('devtools')
-#devtools::install_github("junruidi/actigraphy") 
-#https://github.com/junruidi/actigraphy
-#devtools::install_github("idc9/r_jive")
-#library(actigraphy) 
+# 0a) read data-------------------------- 
 
 library(xlsx)   
 library(knitr) 
 library(dplyr)  # %>%
-library(cosinor)  
+library(cosinor)   
 library(postGGIR) 
 library(zoo) #for RA 
+library(ActCR)
+library(ActFrag) 
+library(survival)
+library(ineq)
+ 
+
 setwd(currentdir)  
 
 # Prepare count/wear data for JIVE
@@ -336,10 +337,9 @@ It is sometimes of interest to look at time spent in a certain state during a da
    +  `r paste("vigorous time in minutes was defined as ENMO>",PA.threshold[3],"mg",sep="") `.
    +  sleep window was removed from the physical activity duration calculation by set weartime=nonsleepMatrix in Time_long2().
  
-```{r chunk25x_earlier_for_PAinM10, include=FALSE} 
-iv_all = IV_long2(count.data = count, level = 600) #10 minutes window
-ra_all = RA_long2(count.data = count ) # RA,L5,M10
-is_all = IS_long2(count.data = count, level = 600) 
+```{r chunk25x_earlier_for_PAinM10, include=FALSE}   
+ra_all = RA_long2(count.data = count, window=(ncol(count)-2)/1440, method = "average") # one minute window  
+ 
 
 quantile(ra_all[,"M10TIME"])
 dim(ra_all)
@@ -352,10 +352,13 @@ M10windowMatrix<-wear
 n60=60*60/epochOut
 n600=10*60*60/epochOut  # M10 ends after 10 hours 
 n599=n600-1     
-for (i in 1:nrow(M10windowMatrix)){  
-start3<- as.integer(ra_all[i,"M10TIME"]*n60)     
-end3<-start3+n599   
+for (i in 1:nrow(M10windowMatrix)){ #error for 841~1440 window for 30s data 
+end3<- as.integer((ra_all[i,"M10TIME"]+10-1/60)*60)  #end position for 1440 data  
+end3<-end3*60/epochOut 
+start3<-end3-n599   
   
+ra_all[i,"start"]<-start3
+ra_all[i,"end"]<-end3
 M10windowMatrix[i,3:ncol(M10windowMatrix)]<-0
 M10windowMatrix[i,2+start3:end3]<-1   
 if (end3-start3!=n599 | end3>n1440 | sum(M10windowMatrix[i,3:ncol(M10windowMatrix)])!=n600) stop(paste("Found wrong M10 window at ",indexer.M10[i],sep=""))  
@@ -364,30 +367,7 @@ dim(M10windowMatrix)
 head(M10windowMatrix) 
 write.csv(M10windowMatrix,file=M10windowFN,row.names=FALSE)
 ```
-
-```{r chunk22a,include=FALSE} 
-# activity_time = light + mod + vig time
-PA.threshold = c(PA.threshold,Inf)  # for vig time.
-
-PAfun<-function(count.data,weartime,PA.threshold){
-sed_all0<-NULL
-for (f in 1:length(PA.threshold)){
-temp = Time_long2(count.data = count.data, weartime = weartime, thresh =PA.threshold[f], smallerthan = TRUE)
-colnames(temp)[3]<-paste(colnames(temp)[3],PA.threshold[f],sep="")
-if (f==1) sed_all0<-temp else {
-if (length(which(sed_all0[,1]!=temp[,1]))>=1 | length(which(sed_all0[,2]!=temp[,2]))>=1) stop("check ID+Day in Time_long2 function") 
-sed_all0<-cbind(sed_all0,temp[,3])  
-}
-# print(c(f,dim(temp),dim(sed_all0)))
-}
-sed_all<-sed_all0
-for (j in 4:6) sed_all[,j]<-sed_all0[,j]-sed_all0[,j-1]
-colnames(sed_all)[3:6]<-c("sed_time","light_time","mod_time","vig_time")
-sed_all[,"MVPA_time"]<-sed_all[,"mod_time"] + sed_all[,"vig_time"]  
-sed_all[,"activity_time"]<-sed_all[,"light_time"] +sed_all[,"mod_time"] + sed_all[,"vig_time"] 
-return(sed_all)
-} 
-```
+ 
 
 **Calculation activity duration based on  Day time (nonsleep)/ M10 window / 24 hours**
 
@@ -397,8 +377,7 @@ sed_allB<-PAfun(count.data=count,weartime = M10windowMatrix,PA.threshold)
 sed_allC<-PAfun(count.data=count,weartime = wear,PA.threshold)  
 
 sed_all<-merge(sed_allA,sed_allB,by=c("ID","Day"),all=TRUE,suffix=c("","_M10"))
-sed_all<-merge(sed_all,sed_allC,by=c("ID","Day"),all=TRUE,suffix=c("","_24h"))
-
+sed_all<-merge(sed_all,sed_allC,by=c("ID","Day"),all=TRUE,suffix=c("","_24h")) 
 ``` 
 
   * `r paste("dim(sed_all) = ",dim(sed_all)[1],"X",dim(sed_all)[2],sep="")`     
@@ -441,11 +420,6 @@ We can calculate the above mentioned metrics for both sedentary and active bout.
 
 Given all the activity and wear/nonwear flag data for the whole dataset, user can choose to calcualte framentation at daily level, or aggregate bouts across all available days by choosing from either "subject" and "day" for the argument `by`:
 
-```{r,include=FALSE} 
-library(survival)
-library(ineq)
-library(dplyr)
-```
 ```{r chunk23,warning=FALSE,message=FALSE}
 frag_by_subject = fragmentation_long2(count, weartime = wear,thresh=PA.threshold[1], metrics = "all",by = "subject")
 frag_by_day = fragmentation_long2(count, weartime = wear,thresh=PA.threshold[1], metrics ="all",by = "day")
@@ -471,24 +445,31 @@ The upper panel is for subject-level and the lower panel is for day-level.
 The classic cosinor model is defined as $r(t)= mes + amp \times c(t)$ where $c(t) = \cos([t-\phi]2\pi/24)$ where mes is mesor, amp is amplitude, $\phi$ is the acrophase.  It is suggested to log transformed the curve  
  
 
-```{r chunk24}  
-extcos = ActCosinor( data = count )  
-extcos.log = ActCosinor( data = log.count )   
+```{r chunk24,results="hide"}  
+minuteW=(ncol(count)-2)/1440
+Cos = ActCosinor_long2( count.data = count, window=minuteW)  
+Cos.log = ActCosinor_long2( count.data = log.count, window=minuteW)   
+extcos = ActExtendCosinor_long2(count.data = count, window=minuteW)  
+extcos.log = ActExtendCosinor_long2(count.data = log.count, window=minuteW)   
+colnames(Cos)<-c("ID","ndays","mesor","amp","acro","acrotime")
+colnames(Cos.log)<-c("ID","ndays","mesor_L","amp_L","acro_L","acrotime_L")
+colnames(extcos)<-gsub(paste("_",minuteW,sep=""),"_ext",colnames(extcos))
+colnames(extcos.log)<-gsub(paste("_",minuteW,sep=""),"_ext_L",colnames(extcos.log))
+
+cosinormodel.1<-merge(Cos,Cos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel.2<-merge(extcos,extcos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel<-merge(cosinormodel.1[,-2],cosinormodel.2[,-2],by="ID",all=TRUE)  
 ```
  
-  * `r paste("dim(extcos) = ",dim(extcos)[1],"X",dim(extcos)[2],sep="")`    
-  * `r paste("dim(extcos.log) = ",dim(extcos.log)[1],"X",dim(extcos.log)[2],sep="")`     
+  * `r paste("dim(cosinormodel) = ",dim(cosinormodel)[1],"X",dim(cosinormodel)[2],sep="")` 
  
 
-```{r plot24, echo=FALSE , fig.width=10, fig.height=8} 
-par(mfrow=c(2,ncol(extcos)-1)) 
-if (ncol(extcos)>=4) par(mai=c(0.82,0.42,0.42,0 )) else par(mai=c(0.82,0.42,0.42,0.4 ))  # bottom,left,up,right 
-for (j in 2:ncol(extcos)) boxplot(as.numeric(as.character(extcos[,j])),xlab=colnames(extcos)[j])
-for (j in 2:ncol(extcos.log)) boxplot(as.numeric(as.character(extcos.log[,j])),xlab=colnames(extcos.log)[j])
  
+```{r plot24, echo=FALSE , fig.width=10, fig.height=3} 
+par(mfrow=c(1,9) )
+if (ncol(cosinormodel)>=4) par(mai=c(0.82,0.42,0.42,0 )) else par(mai=c(0.82,0.42,0.42,0.4 ))  # bottom,left,up,right 
+for (j in 2:ncol(cosinormodel)) boxplot(as.numeric(as.character(cosinormodel[,j])),xlab=colnames(cosinormodel)[j])  
 ``` 
-The upper panel is for ExtCos without logtransform and the lower panel is for ExtCos with logtransform .
-  
 
 
 ### 2.5 intradaily variability and interdaily statbility
@@ -508,22 +489,28 @@ M10TIME | Start time of the highest acceleration value of the highest accelerati
 
 For a single vector,
 
-```{r chunk25,eval=FALSE}  
-iv_all = IV_long2(count.data = count, level = 600) # 10 minutes window
-ra_all = RA_long2(count.data = count ) 
-is_all = IS_long2(count.data = count, level = 600)  
+ 
+```{r chunk25,eval=TRUE,warning=F,message=F,results="hide"}   
+iv_all = IV_long2(count.data = count, window=(ncol(count)-2)/144, method = "average") #10 minutes window
+colnames(iv_all)[3]<-"IV" 
+
+is_all = IS_long2(count.data = count, window=(ncol(count)-2)/144, method = "average"  )  #10 minute level 
+colnames(is_all)[2]<-"IS"  
+
+ra_all = RA_long2(count.data = count, window=(ncol(count)-2)/1440, method = "average") # one minute window for RA,L5,M10,L5time, M10time 
 ```
+ 
  
   * `r paste("dim(iv_all) = ",dim(iv_all)[1],"X",dim(iv_all)[2],sep="")`    
   * `r paste("dim(ra_all) = ",dim(ra_all)[1],"X",dim(ra_all)[2],sep="")`     
   * `r paste("dim(is_all) = ",dim(is_all)[1],"X",dim(is_all)[2],sep="")`    
 
-```{r plot25, echo=FALSE , fig.width=10, fig.height=5} 
-par(mfrow=c(1,3)) 
+```{r plot25, echo=FALSE , fig.width=10, fig.height=4} 
+par(mfrow=c(1,7)) 
 par(mai=c(0.82,0.42,0.42,0.4 )) # bottom,left,up,right 
 boxplot(iv_all[,"IV"],xlab="IV")
-boxplot(ra_all[,"RA"],xlab="RA")
 boxplot(is_all[,"IS"],xlab="IS")
+for (j in 3:ncol(ra_all)) boxplot(ra_all[,j],xlab=colnames(ra_all)[j])
 ``` 
 
 ```{r mergeAll,include=FALSE}
@@ -548,8 +535,7 @@ output[,"SubjectLevel"]<-1
 # subject level 
 output<-merge(output,is_all,by="ID",all=TRUE)  
 output<-merge(output,frag_by_subject,by=c("ID"),suffix=c("","_S"),all=TRUE) 
-output<-merge(output,extcos,by=c("ID"),all=TRUE) 
-output<-merge(output,extcos.log,by=c("ID"),suffix=c("","_L"),all=TRUE) 
+output<-merge(output,cosinormodel,by=c("ID"),all=TRUE)  
 output<-merge(idM,output,by.x=c("filename","Date"),by.y=c("ID","Day"),all=TRUE) 
 output<-output[,c(1,3,2,4:ncol(output))] 
 dim(output)

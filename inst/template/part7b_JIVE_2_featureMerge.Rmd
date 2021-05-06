@@ -84,6 +84,8 @@ outFN.anno<-paste("part7_",studyname,"_all_features_dictionary.xlsx",sep="")
 library(xlsx)   
 library(knitr) 
 library(postGGIR)
+library(dplyr)
+library(kableExtra)
  
 setwd(currentdir) 
 
@@ -128,7 +130,9 @@ part4<-dict[which(dict[,"Source"]=="part4"),"Variable"]
 part6<-dict[which(dict[,"Source"]=="part5"),"Variable"]
 partR<-dict[which(dict[,"Source"]=="R"),"Variable"]
 
-kable(dict[,2:5])
+kable(dict[,2:5]) %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 table(dict[,"Source"])
 ```
 
@@ -222,7 +226,9 @@ if (length(miss)>=1) d2<-d2[-miss,]
  
 **Note 1: `r inFN2[6]` had `r t$N` duplicate days**
 ```{r,echo=F}
-if (t$N>=1) kable(t$note,caption="Duplicate days Correction according to part4") 
+if (t$N>=1) kable(t$note,caption="Duplicate days Correction according to part4")  %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 # 
 **Note 2: Cleaningcode in GGIR part4 and part5; Set sleep feature=NA for Cleaningcode>=2 (freq=`r length(S2a)` nights)**   
@@ -366,7 +372,9 @@ cleancode2: number of missingness of features of each subject
 
 
 ```{r,echo=F}
-if (nrow(Fmer8.bad)>=1) kable(Fmer8.bad,caption="N valid night of removed subjects for mean features")
+if (nrow(Fmer8.bad)>=1) kable(Fmer8.bad,caption="N valid night of removed subjects for mean features")  %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 #
@@ -400,7 +408,9 @@ write.csv(Fmer9, file=outFN[4],row.names = FALSE )
  
 
 ```{r,echo=F}
-if (nrow(Fmer9.bad)>=1) kable(Fmer9.bad,caption="N valid night of removed subjects for SD features") 
+if (nrow(Fmer9.bad)>=1) kable(Fmer9.bad,caption="N valid night of removed subjects for SD features")  %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 #
@@ -431,7 +441,9 @@ colnames(ansM)<-c("Filename","Description","Nrow","Ncol","Nsubjects","Removed Su
 ```
 
 ```{r chunk6,echo=FALSE}
-kable(ansM,caption="Description of output files")   
+kable(ansM,caption="Description of output files")   %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+ 
 ```
 
 #
@@ -450,7 +462,9 @@ t2<-pheno.plot(inputFN=outFN[3],csv=TRUE, start=4)
 
 ```
 ```{r,echo=FALSE,warning=FALSE, message=FALSE} 
-kable(t1,caption=paste("Summary of features (",outFN[2],")",sep=""))  
+kable(t1,caption=paste("Summary of features (",outFN[2],")",sep=""))   %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
  
 

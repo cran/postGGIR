@@ -59,17 +59,19 @@ setwd(currentdir)
 
   
 
-```{r c1data,include=FALSE}
-#install.packages('devtools')
-#devtools::install_github("junruidi/actigraphy")
-#devtools::install_github("idc9/r_jive")
-#library(actigraphy) 
-
+```{r c1data,include=FALSE} 
 library(xlsx)   
 library(knitr) 
 library(dplyr)  # %>%
-library(cosinor)  
+library(cosinor)   
 library(postGGIR) 
+library(zoo) #for RA 
+library(ActCR)
+library(ActFrag) 
+library(survival)
+library(ineq) 
+library(kableExtra)
+ 
 
 # Prepare count/wear data for JIVE
 enmoFN<-paste("./data/impu.flag_All_",studyname,"_ENMO.data.",epochOut,"s.csv",sep="")   
@@ -93,8 +95,8 @@ Swe<-which(D3[,"weekday"] %in% c("Saturday","Sunday"))
 idM.wd<-D3[Swd,c("filename","newID","Date")]
 idM.we<-D3[Swe,c("filename","newID","Date")]
   
-count <-cbind(D3[,c("filename","Date")],D3[,(Ctop+1):ncol(D3)])  
-colnames(count)<-c("ID","Day",paste("MIN",1:1440,sep="")) 
+count <-cbind(D3[,c("filename","Date")],D3[,(Ctop+1):ncol(D3)])   
+colnames(count)<-c("ID","Day",paste("MIN",1:(ncol(count)-2),sep="")) 
 log.count = cbind(count[,1:2], log(log.multiplier*count[,-c(1,2)] + 1)) 
 
 count.wd<-count[Swd,] 
@@ -153,41 +155,61 @@ The classic cosinor model is defined as $r(t)= mes + amp \times c(t)$ where $c(t
 # `ExtCos` and `ExtCos_long` calcualte the five parameters, (for a single vector amd whole dataset respectively). It is suggested to log transformed the curve by choose `logtransform = TRUE`. 
 ```
 
-```{r chunk24, results="hide"}  
+```{r chunk24wd,results="hide"}  
+minuteW=(ncol(count.wd)-2)/1440
+Cos = ActCosinor_long2( count.data = count.wd, window=minuteW)  
+Cos.log = ActCosinor_long2( count.data = log.count.wd, window=minuteW)   
+extcos = ActExtendCosinor_long2(count.data = count.wd, window=minuteW)  
+extcos.log = ActExtendCosinor_long2(count.data = log.count.wd, window=minuteW)   
+colnames(Cos)<-c("ID","ndays","mesor","amp","acro","acrotime")
+colnames(Cos.log)<-c("ID","ndays","mesor_L","amp_L","acro_L","acrotime_L")
+colnames(extcos)<-gsub(paste("_",minuteW,sep=""),"_ext",colnames(extcos))
+colnames(extcos.log)<-gsub(paste("_",minuteW,sep=""),"_ext_L",colnames(extcos.log))
 
-extcos.wd = ActCosinor( data = count.wd )  
-extcos.log.wd = ActCosinor( data = log.count.wd ) 
-
-extcos.we = ActCosinor( data = count.we )  
-extcos.log.we = ActCosinor( data = log.count.we )  
-
- 
-colnames(extcos.wd)[2:ncol(extcos.wd)]<-paste(colnames(extcos.wd)[2:ncol(extcos.wd)],"_wd",sep="") 
-colnames(extcos.log.wd)[2:ncol(extcos.log.wd)]<-paste(colnames(extcos.log.wd)[2:ncol(extcos.log.wd)],"_L_wd",sep="") 
-colnames(extcos.we)[2:ncol(extcos.we)]<-paste(colnames(extcos.we)[2:ncol(extcos.we)],"_we",sep="") 
-colnames(extcos.log.we)[2:ncol(extcos.log.we)]<-paste(colnames(extcos.log.we)[2:ncol(extcos.log.we)],"_L_we",sep="") 
- 
+cosinormodel.1<-merge(Cos,Cos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel.2<-merge(extcos,extcos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel.wd<-merge(cosinormodel.1[,-2],cosinormodel.2[,-2],by="ID",all=TRUE)  
+colnames(cosinormodel.wd)[2:ncol(cosinormodel.wd)]<-paste(colnames(cosinormodel.wd)[2:ncol(cosinormodel.wd)],"_wd",sep="") 
 ```
+
+
+
+```{r chunk24we,results="hide"}  
+minuteW=(ncol(count.we)-2)/1440
+Cos = ActCosinor_long2( count.data = count.we, window=minuteW)  
+Cos.log = ActCosinor_long2( count.data = log.count.we, window=minuteW)   
+extcos = ActExtendCosinor_long2(count.data = count.we, window=minuteW)  
+extcos.log = ActExtendCosinor_long2(count.data = log.count.we, window=minuteW)   
+colnames(Cos)<-c("ID","ndays","mesor","amp","acro","acrotime")
+colnames(Cos.log)<-c("ID","ndays","mesor_L","amp_L","acro_L","acrotime_L")
+colnames(extcos)<-gsub(paste("_",minuteW,sep=""),"_ext",colnames(extcos))
+colnames(extcos.log)<-gsub(paste("_",minuteW,sep=""),"_ext_L",colnames(extcos.log))
+
+cosinormodel.1<-merge(Cos,Cos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel.2<-merge(extcos,extcos.log,by=c("ID","ndays"),all=TRUE) 
+cosinormodel.we<-merge(cosinormodel.1[,-2],cosinormodel.2[,-2],by="ID",all=TRUE)  
+colnames(cosinormodel.we)[2:ncol(cosinormodel.we)]<-paste(colnames(cosinormodel.we)[2:ncol(cosinormodel.we)],"_we",sep="")  
+```
+
+  
 
 ### 2.5  interdaily statbility
 
-```{r chunk25}  
-is_all.wd = IS_long2(count.data = count.wd, level = "hour")  
-is_all.we = IS_long2(count.data = count.we, level = "hour")  
-colnames(is_all.wd)[2]<-paste(colnames(is_all.wd)[2],"_wd",sep="") 
-colnames(is_all.we)[2]<-paste(colnames(is_all.we)[2],"_we",sep="")   
+```{r chunk25}   
+is_all.wd = IS_long2(count.data = count.wd, window=(ncol(count)-2)/144, method = "average"  )  #10 minute  
+colnames(is_all.wd)[2]<-"IS_wd"  
+is_all.we = IS_long2(count.data = count.we, window=(ncol(count)-2)/144, method = "average"  )  #10 minute  
+colnames(is_all.wd)[2]<-"IS_we"   
 ```
 
 ```{r chunk24x, include=FALSE}  
 
-# subject level 
+# subject level features: cosinor model, IS
 
 output<-is_all.wd 
 output<-merge(output,is_all.we,by=c("ID"), all=TRUE)  
-output<-merge(output,extcos.wd,by=c("ID"),all=TRUE)  
-output<-merge(output,extcos.log.wd,by=c("ID"),suffix=c("","_L"),all=TRUE) 
-output<-merge(output,extcos.we,by=c("ID"),suffix=c("","_L"),all=TRUE) 
-output<-merge(output,extcos.log.we,by=c("ID"),suffix=c("","_L"),all=TRUE) 
+output<-merge(output,cosinormodel.wd,by=c("ID"),all=TRUE)  
+output<-merge(output,cosinormodel.we,by=c("ID"), all=TRUE)  
  
  
 output<-merge(idM,output,by.x=c("filename" ),by.y=c("ID" ),all=TRUE)  
@@ -433,7 +455,9 @@ if (f==1) ans1<-ans else ans2<-ans
 cleancode2: number of missingness of features of each subject
 
 ```{r,echo=F}
-if (nrow(Fmer8.bad)>=1) kable(Fmer8.bad,caption="N valid night of removed subjects for mean features")
+if (nrow(Fmer8.bad)>=1) kable(Fmer8.bad,caption="N valid night of removed subjects for mean features") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 
@@ -441,7 +465,9 @@ if (nrow(Fmer8.bad)>=1) kable(Fmer8.bad,caption="N valid night of removed subjec
 ansM<-rbind(ans1,ans2) 
 colnames(ansM)<-c("Day","Filename", "Nrow", "Nfiles","Nsubjects")   
 rownames(ansM)<-NULL
-kable(ansM,caption="Description of output files")   
+kable(ansM,caption="Description of output files")   %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+
 ```
 
 # 4 Plot features

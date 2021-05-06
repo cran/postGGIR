@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Guo" />
 
-<meta name="date" content="2021-02-23" />
+<meta name="date" content="2021-05-06" />
 
 <title>postGGIR</title>
 
@@ -30,7 +30,14 @@
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
@@ -136,7 +143,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">postGGIR</h1>
 <h4 class="author">Wei Guo</h4>
-<h4 class="date">February 23, 2021</h4>
+<h4 class="date">May 06, 2021</h4>
 
 
 
@@ -223,58 +230,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################  </span></span>
 <span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>currentdir <span class="ot">=</span> </span>
 <span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>studyname <span class="ot">=</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>bindir <span class="ot">=</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>binfile.list <span class="ot">=</span> <span class="cn">NULL</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>outputdir <span class="ot">=</span> </span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>epochIn <span class="ot">=</span> <span class="dv">5</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>epochOut <span class="ot">=</span> <span class="dv">5</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>flag.epochOut <span class="ot">=</span> <span class="dv">60</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>use.cluster <span class="ot">=</span> <span class="cn">FALSE</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>log.multiplier <span class="ot">=</span> <span class="dv">9250</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>QCdays.alpha <span class="ot">=</span> <span class="dv">7</span></span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>QChours.alpha <span class="ot">=</span> <span class="dv">16</span> </span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="cn">NULL</span> </span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir) </span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="co">#   remove duplicate sample IDs for plotting and feature extraction </span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mode<span class="sc">==</span><span class="dv">3</span> <span class="sc">&amp;</span> rmDup){</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># step 1: read ./summary/*remove_temp.csv file (output of mode=2)</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>keep.last<span class="ot">&lt;-</span><span class="cn">TRUE</span> <span class="co">#keep the latest visit for each sample</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>sumdir<span class="ot">&lt;-</span><span class="fu">paste</span>(currentdir,<span class="st">&quot;/summary&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(sumdir)  </span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>inFN<span class="ot">&lt;-</span><span class="fu">paste</span>(studyname,<span class="st">&quot;_samples_remove_temp.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="fu">paste</span>(sumdir,<span class="st">&quot;/&quot;</span>,studyname,<span class="st">&quot;_samples_remove.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################   </span></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 3 as rmDup=TRUE)  create useIDs.FN file</span></span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################  </span></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="co"># step 2: create the ./summary/*remove.csv file manually or by R commands</span></span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(inFN,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;Date&quot;</span>]),]</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;newID&quot;</span>]),]</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>d[<span class="fu">which</span>(<span class="fu">is.na</span>(d[,<span class="st">&quot;newID&quot;</span>])),]</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>S<span class="ot">&lt;-</span><span class="fu">duplicated</span>(d[,<span class="st">&quot;newID&quot;</span>],<span class="at">fromLast=</span>keep.last) <span class="co">#keep the last copy for nccr</span></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>d[S,<span class="st">&quot;duplicate&quot;</span>]<span class="ot">&lt;-</span><span class="st">&quot;remove&quot;</span></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(d,<span class="at">file=</span>useIDs.FN,<span class="at">row.names=</span>F) </span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="co">#  maincall</span></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir)  </span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="fu">afterggir</span>(<span class="at">mode=</span>mode,useIDs.FN,currentdir,studyname,bindir,</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,<span class="at">QCdays.alpha=</span>QCdays.alpha,<span class="at">QChours.alpha=</span>QChours.alpha,<span class="at">Rversion=</span><span class="st">&quot;R/3.6.3&quot;</span>,<span class="at">filename2id=</span>filename2id) </span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################</span></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="fu">call.afterggir</span>(mode)   </span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################  </span></span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co">#   Note:   call.afterggir(mode=0)</span></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =0 : creat sw/Rmd file</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =1 : data transform using cluster or not</span></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =2 : summary</span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =3 : clean </span></span>
-<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =4 : impu</span></span></code></pre></div>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>bindir <span class="ot">=</span> </span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>outputdir <span class="ot">=</span> </span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>epochIn <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>epochOut <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>flag.epochOut <span class="ot">=</span> <span class="dv">60</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>use.cluster <span class="ot">=</span> <span class="cn">FALSE</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>log.multiplier <span class="ot">=</span> <span class="dv">9250</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>QCdays.alpha <span class="ot">=</span> <span class="dv">7</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>QChours.alpha <span class="ot">=</span> <span class="dv">16</span> </span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="cn">NULL</span> </span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir) </span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co">#   remove duplicate sample IDs for plotting and feature extraction </span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mode<span class="sc">==</span><span class="dv">3</span> <span class="sc">&amp;</span> rmDup){</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># step 1: read ./summary/*remove_temp.csv file (output of mode=2)</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>keep.last<span class="ot">&lt;-</span><span class="cn">TRUE</span> <span class="co">#keep the latest visit for each sample</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>sumdir<span class="ot">&lt;-</span><span class="fu">paste</span>(currentdir,<span class="st">&quot;/summary&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(sumdir)  </span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>inFN<span class="ot">&lt;-</span><span class="fu">paste</span>(studyname,<span class="st">&quot;_samples_remove_temp.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="fu">paste</span>(sumdir,<span class="st">&quot;/&quot;</span>,studyname,<span class="st">&quot;_samples_remove.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################   </span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 3 as rmDup=TRUE)  create useIDs.FN file</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################  </span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="co"># step 2: create the ./summary/*remove.csv file manually or by R commands</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(inFN,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;Date&quot;</span>]),]</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;newID&quot;</span>]),]</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>d[<span class="fu">which</span>(<span class="fu">is.na</span>(d[,<span class="st">&quot;newID&quot;</span>])),]</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>S<span class="ot">&lt;-</span><span class="fu">duplicated</span>(d[,<span class="st">&quot;newID&quot;</span>],<span class="at">fromLast=</span>keep.last) <span class="co">#keep the last copy for nccr</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>d[S,<span class="st">&quot;duplicate&quot;</span>]<span class="ot">&lt;-</span><span class="st">&quot;remove&quot;</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(d,<span class="at">file=</span>useIDs.FN,<span class="at">row.names=</span>F) </span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="co">#  maincall</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir)  </span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">afterggir</span>(<span class="at">mode=</span>mode,useIDs.FN,currentdir,studyname,bindir,</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,<span class="at">QCdays.alpha=</span>QCdays.alpha,<span class="at">QChours.alpha=</span>QChours.alpha,<span class="at">Rversion=</span><span class="st">&quot;R/3.6.3&quot;</span>,<span class="at">filename2id=</span>filename2id) </span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="fu">call.afterggir</span>(mode)   </span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################  </span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="co">#   Note:   call.afterggir(mode=0)</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =0 : creat sw/Rmd file</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =1 : data transform using cluster or not</span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =2 : summary</span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =3 : clean </span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =4 : impu</span></span></code></pre></div>
 </div>
 <div id="edit-shell-script" class="section level2">
 <h2>Edit shell script</h2>

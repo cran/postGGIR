@@ -278,15 +278,14 @@ Jscore <- cbind(paste("JScore_Joint", 1:nrow(J_Est$joint.scores),sep="_"),J_Est$
 for (k in 1:3) {
   temp<- J_Est$indiv.scores[[k]]   
   temp2<-cbind(paste("JScore",domainName[k],1:nrow(temp),sep="_"),temp)
-  Jscore <- rbind(Jscore,temp2)
-  print(dim(Jscore))
+  Jscore <- rbind(Jscore,temp2) 
 } 
 colnames(Jscore)<-c("JScore",jive.filenames) 
 rownames(Jscore)<-Jscore[,1] 
 Jscore2<-cbind(filename=jive.filenames,t(Jscore[,-1])) 
 write.csv(Jscore2,file=scoreOutFN,row.names=F) 
 # Jscore[,1:5]
-print(paste(c("Get Jive Score with dim=",dim(Jscore)),collapse="  "))
+# print(paste(c("Get Jive Score with dim=",dim(Jscore)),collapse="  "))
 }
 
 ```
@@ -296,7 +295,7 @@ print(paste(c("Get Jive Score with dim=",dim(Jscore)),collapse="  "))
 if (is.list(J_Est)){  
 try(showPCA(res,n_joint=2,Colors= 'purple') )  
 try(showPCA(res,n_joint=1,n_indiv=c(1,1,1),Colors='purple') ) 
-pca.message<-"Get PCA plots for jont and individual scores"
+pca.message<-paste("Get PCA plots for jont and individual scores (dim=",dim(Jscore)[1], " X ",dim(Jscore)[2],")",sep="")
 } else {pca.message<-"Errors: R jive.predict fails to compute JIVE scores" }
 ``` 
 

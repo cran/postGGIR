@@ -53,7 +53,6 @@ knitr::opts_chunk$set(
 #  currentdir =
 #  studyname =
 #  bindir =
-#  binfile.list = NULL
 #  outputdir =
 #  
 #  epochIn = 5
@@ -171,7 +170,7 @@ kable(dict.CR) %>%
 #  d3<-read.xlsx("postGGIR.output.description.xlsx",sheetName="features")
 #  
 #  
-#  cd /data/guow4/project0/GGIR/postGGIR/postGGIR_compile/postGGIR3.0/vignettes
+#  cd /data/guow4/project0/GGIR/postGGIR/postGGIR_compile/v2/postGGIR/vignettes
 #  R -e "rmarkdown::render('postGGIR.Rmd'   )"
 #  
 #  

@@ -24,7 +24,6 @@ It is preferable that user provide their own wear/non wear flag which should has
 as the activity data. This function provide wear/non wear flag based on time of day.
 }
 \details{
-Some of the features can be only calculated at certain time period. For example, fragmentation metrics are usually defined
-when subject is awake. The \code{weartime} provide time periods on which those features should be extracted.
+Fragmentation metrics are usually defined when subject is awake. The \code{weartime} provide time periods on which those features should be extracted.
 This can be also used as indication of wake/sleep.
 }

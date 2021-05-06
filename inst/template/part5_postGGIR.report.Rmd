@@ -392,27 +392,26 @@ axis(1, at = time.labels.at, labels = time.labels)
 abline(v = hour.line.at, col = "gray", lty = "dotted") 
   
 ```
-
-```{r fig2, echo=FALSE, message = F, warning = F, fig.width= 10,fig.height=5}
  
+
+```{r fig2, echo=FALSE, message = F, warning = F, fig.width= 10,fig.height=5} 
 ## plot all profiles   
 LhTAC.mean <- apply(LhTAC, 2, mean, na.rm=T)
-LhTAC.sd <- apply(LhTAC, 2, sd, na.rm=T)
-
+LhTAC.sd <- apply(LhTAC, 2, sd, na.rm=T) 
+my.ylim<-range(c(LhTAC, LhTAC.mean + 1.96*LhTAC.sd, LhTAC.mean - 1.96*LhTAC.sd),na.rm=TRUE) 
 
 col.light = rgb(0, 0, 0, alpha = 5, maxColorValue = 255) 
-plot(x.range, LhTAC[1,], type = "n", ylim = range(LhTAC,na.rm=TRUE),xaxt = "n", ylab = "Log (9250*ENMO + 1)", xlab = "Hour", 
+plot(x.range, LhTAC[1,], type = "n", ylim = my.ylim,xaxt = "n", ylab = "Log (9250*ENMO + 1)", xlab = "Hour", 
 col = col.light, main = "Diurnal Profiles (mean+-1.96sd)")
 
-for(i in 1:n.row) lines(x.range, LhTAC[i,], col = col.light, type = "l", lwd = 1)
-lines(x.range, LhTAC.mean, col = "blue", type = "l", lwd = 2)
-lines(x.range, LhTAC.mean + 1.96*LhTAC.sd, col = "blue", type = "l", lty = "dashed", lwd = 2)
-lines(x.range, LhTAC.mean - 1.96*LhTAC.sd, col = "blue", type = "l", lty = "dashed", lwd = 2)
+for(i in 1:n.row) lines(x.range, LhTAC[i,], col = col.light, type = "l", lwd = 1.5)
+lines(x.range, LhTAC.mean, col = "blue", type = "l", lwd = 1.5)
+lines(x.range, LhTAC.mean + 1.96*LhTAC.sd, col = "blue", type = "l", lty = "dashed", lwd = 1.5)
+lines(x.range, LhTAC.mean - 1.96*LhTAC.sd, col = "blue", type = "l", lty = "dashed", lwd = 1.5)
 axis(1, at = time.labels.at, labels = time.labels)
-abline(v = hour.line.at, col = "gray", lty = "dotted") 
-
- 
+abline(v = hour.line.at, col = "gray", lty = "dotted")  
 ```
+ 
  
 Marginal info: **hour-specific means and standard deviations**
 
