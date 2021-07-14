@@ -1,7 +1,7 @@
 Package: postGGIR
-Version: 2.0.0
+Version: 2.4.0
 Title: Data Processing after Running 'GGIR' for Accelerometer Data
-Description: Generate all necessary R/Rmd/shell files for data processing after running 'GGIR' (v2.0) for accelerometer data. In part 1, all csv files in the GGIR output directory were read, transformed and then merged. In part 2, the GGIR output files were checked and summarized in one excel sheet. In part 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. In part 4, the cleaned activity data was imputed by the average Euclidean norm minus one (ENMO) over all the valid days for each subject. Finally, a comprehensive report of data processing was created using Rmarkdown, and the report includes few exploratory plots and multiple commonly used features extracted from minute level actigraphy data. 
+Description: Generate all necessary R/Rmd/shell files for data processing after running 'GGIR' (v2.4.0) for accelerometer data. In part 1, all csv files in the GGIR output directory were read, transformed and then merged. In part 2, the GGIR output files were checked and summarized in one excel sheet. In part 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. In part 4, the cleaned activity data was imputed by the average Euclidean norm minus one (ENMO) over all the valid days for each subject. Finally, a comprehensive report of data processing was created using Rmarkdown, and the report includes few exploratory plots and multiple commonly used features extracted from minute level actigraphy data. 
 Authors@R: c(
     person(given = "Wei", family = "Guo", 
         role = c("aut", "cre"), email = "wei.guo3@nih.gov"), 
@@ -23,9 +23,9 @@ Type: Package
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2021-05-06 19:12:06 UTC; guow4
+Packaged: 2021-07-14 16:05:02 UTC; guow4
 Author: Wei Guo [aut, cre],
   Vadim Zipunnikov [aut],
   Kathleen Merikangas [aut]
 Repository: CRAN
-Date/Publication: 2021-05-06 19:40:02 UTC
+Date/Publication: 2021-07-14 16:50:02 UTC

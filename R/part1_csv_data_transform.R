@@ -82,7 +82,7 @@ y<-ifelse(k==-1,x[n],x[min(k,n)])
 return(y)
 }
 RData.files1 <- list.files(basic.ggir.dir,recursive=TRUE)
-RData.files2 <-sort(RData.files1[ grep(".bin.RData",RData.files1)  ])
+RData.files2 <-sort(RData.files1[ grep(".RData",RData.files1)  ]) #bin.RData 7/6/21
 csvData.files1 <- list.files(csv.ggir.dir,recursive=TRUE)
 csvData.files2 <-sort(csvData.files1[ grep(".csv",csvData.files1)  ])
 nf<-length(csvData.files2)
@@ -109,6 +109,11 @@ outFN<-paste(studyname,outFN,sep="_")
 if (mergeVar==1){ #only output nonwear matrix and plot
 write.csv(RData.files2,file=paste(outFN[1],"_Rdatalist.csv",sep=""),row.names=F )
 Ymetalong<- c("timestamp","nonwearscore","clippingscore","lightmean","lightpeak","temperaturemean","EN")
+# Note: ggir2.4.0 names(M$metalong)= "timestamp"     "nonwearscore"  "clippingscore" "en" in hbn data (7.14.2021)
+
+
+
+
 
 for (y in 2:length(Ymetalong)){
 outfn.y<-paste(Ymetalong[y],outFN[5],sep="_") 
@@ -121,7 +126,7 @@ print(paste(f,"---start-----------------------",RData.files2[f],"------------",s
 T1<-NULL 
 T1<-try(single.data.nonwear(Y=Ymetalong[y],ggir.dir=basic.ggir.dir,filename=inputFN[f],epochIn,epochOut,ID=RData.files2[f] ,ifplot=ifplot) )
 
-if (is.null(dim(T1))) print("Got some error in this run") else {
+if (is.null(dim(T1))) print(paste("Fail to extract ",Ymetalong[y]," in the RData in basic folder",sep="")) else {
 if (f==f0)  nonwear.mer<-T1 
 if (f>f0 )  nonwear.mer<-myrbind(nonwear.mer,T1)  
 getwd()
@@ -255,8 +260,8 @@ single.data.nonwear<-function(Y,ggir.dir,filename,epochIn,epochOut,ID=filename,i
   names(M) 
   names(M$metashort) 
   names(M$metalong) 
-  Yc<-which(  names(M$metalong) == Y)
-  if (length(Yc)==0) stop(paste("Cannot find ",Y," variable in", RData.filename,sep=""))
+  Yc<-which( tolower( names(M$metalong) ) ==tolower(Y) ) #2.4 EN->en
+  if (length(Yc)==0) stop(paste("Warning: Cannot find ",Y," variable in", RData.filename,sep=""))
 
   ##############################################
   #2 nowearscore

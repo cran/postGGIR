@@ -76,6 +76,7 @@ try(system("rm *_ggir_output_summary.xlsx"))
 # library("xlsx")  
 ##########################################################################################################  
 # (1)   file summary in each report
+# GGIR:   binary data from 'GENEActiv'   and GENEA devices (not for sale), .csv-export data from 'Actigraph' <https://actigraphcorp.com> devices, and .cwa and .wav-format data from 'Axivity' <https://axivity.com>.  
 ##########################################################################################################  
    
 print("1) file lists starts...")
@@ -85,7 +86,9 @@ BD<-NULL #big data as final output
 if (!is.null(bindir)){
 files0<-list.files(path = bindir,recursive = TRUE)
 files1<-unlist(lapply(files0,wg1knife_split,split="/",k=-1))  #remove sub directory
-inFN0 <- files1[grep(".bin", files1, fixed=T)]  
+ggirfiletype<-c(".bin",".csv",".cwa",".wav")
+S1<-NULL; for (s in 1:length(ggirfiletype)) S1<-c(S1,grep(ggirfiletype[s], files1, fixed=T))
+inFN0 <- files1[unique(order(S1))]  
 inFN1<-sort(inFN0)
 } else { 
 files0<-list.files(path = paste(ggir.dir,"/meta/basic",sep="") ,recursive = TRUE) 
@@ -111,7 +114,7 @@ BD<-cbind(1:length(unique(inFN1)),unique(inFN1))
 S<-c("basic","csv","ms2.out","ms3.out","ms4.out","ms5.out")
 for (i in 1:length(S)){
 xfiles1<-list.files(path = paste(ggir.dir,"/meta/",S[i],sep="")   )
-xinFN0 <- xfiles1[grep(".bin.RData", xfiles1, fixed=T)]
+xinFN0 <- xfiles1[grep(".RData", xfiles1, fixed=T)]
 xinFN1<-unlist(lapply(xinFN0,wg1knife_split,split="meta_",k=2))  
 xinFN1<-unlist(lapply(xinFN1,wg1knife_split,split=".RData",k=1))    
 set<-unique(setdiff(inFN1,xinFN1) )  
@@ -149,7 +152,7 @@ colnames(ansM)<-c(GGIR_version,"GGIR_folder","Nrow","Nid","Nmiss","Missing_files
 colnames(BD)<-c("i","filename",S,inFN2) 
 
 
-p2sum<-read.csv(inFN3[1],header=1,stringsAsFactors=F)[,c(4,5)] #date=2000-11-25
+p2sum<-read.csv(inFN3[1],header=1,stringsAsFactors=F)[,c(4,5)] #date=2000-11-25, part2_summary
 p2sum[,"Date"]<-substr(p2sum[,"start_time"],1,10)
 BD<-merge(BD,p2sum[,c(1,3)],by="filename",all=TRUE,sort=F)
 
@@ -165,7 +168,7 @@ write.xlsx(ansM, file=BDfn, sheetName = "2_fileSummary",   col.names = TRUE, row
    
 print("2) read part2 day summary file")
 
-d<-read.csv(inFN3[2],header=1,stringsAsFactors=F)
+d<-read.csv(inFN3[2],header=1,stringsAsFactors=F) # part2_daysummary => newID; NA for missing in part2
 colnames(d)[which(colnames(d) %in% c("id","ID"))]<-"id"   #6/1/2020 ggir2.0 id->ID
 
 print(c(inFN3[2], dim(d)))
@@ -426,7 +429,7 @@ inspect<-NULL
 RData.files1 <-list.files(path = bindir,recursive = TRUE, full.names = TRUE) 
 # RData.files2 <-RData.files1[ grep(".bin",RData.files1)  ] #find .bin.cpgz 
 nchar <-nchar(RData.files1)
-RData.files2 <-RData.files1[which(substr(RData.files1,nchar-3,nchar)==".bin")]
+RData.files2 <-RData.files1[which(substr(RData.files1,nchar-3,nchar) %in% ggirfiletype)]
 
 inspect<-NULL
 for ( f in 1:length(RData.files2)){ 

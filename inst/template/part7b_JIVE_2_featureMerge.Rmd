@@ -114,8 +114,9 @@ inFN2<-c("part2_summary",
          "part4_summary_sleep_cleaned",
          "part4_nightsummary_sleep_cleaned",
           paste("part5_",c("personsummary","daysummary"),"_",part5FN,sep="") )  
-inFN3<-paste(data.dir2,"/",inFN2,".csv",sep="") 
-
+inFN3<-paste(data.dir2,"/",inFN2,".csv",sep="")  
+sleepFull.fn<-paste(outputdir,"/results/QC/part4_nightsummary_sleep_full.csv",sep="")  
+sleepFull<-read.csv(sleepFull.fn,head=1,stringsAsFactors=F)  
 ```
 
 ```{r dict,echo=FALSE}
@@ -166,12 +167,14 @@ d4[,"calendardate"]<- format(as.Date(d4[,"calendardate"],"%d/%m/%Y"), "%Y-%m-%d"
 
 ##################################################### 
 # 1.2 sleep variables for PA domain
- 
+# adjust part5ww to match and extract features such as N_atleast5minwakenight,ACC_spt_sleep_mg and dur_day_total_IN_min....
+# difficulty: part5mm not right in date, part5ww has duplicate dates. 
+
 fixDup<-function(part5ww,part4){ #fix duplicates in part5ww
 
 # Note: part4= 25/2/2016, but part5=2016-02-26.
 
-
+length(which(is.na(part5ww[,"calendar_date"]))) 
 part5ww[,"calendar_date_old"]<-part5ww[,"calendar_date"]
 id5w<-paste(part5ww[, "filename"],part5ww[, "calendar_date"],sep="@")   
 dupid<-id5w[which(duplicated(id5w))] 
@@ -179,10 +182,14 @@ dupid<-id5w[which(duplicated(id5w))]
 if (length(dupid)>=1){ 
 S1<-which(id5w %in% dupid)  
 for (i in  S1){
+# print(i)
 j<-which(part4[,"filename"]==part5ww[i,"filename"] & part4[,"sleeponset_ts"]==part5ww[i,"sleeponset_ts"] & part4[,"wakeup_ts"]==part5ww[i,"wakeup_ts"] )
 if (length(j)==1) part5ww[i,"calendar_date"]<-as.character(as.Date(part4[j,"calendar_date"],format="%d/%m/%Y")) 
-if (length(j)==0)  part5ww[i,"calendar_date"]<-NA
-if (length(j)>=2)  stop("Please check you data, found duplicate sleeponset and wakeup") 
+if (length(j)==0)  part5ww[i,"calendar_date"]<-NA #no match in part4
+if (length(j)>=2)  {j2<- which.min(abs(as.Date(part4[j,"calendar_date"],format="%d/%m/%Y")-as.Date(part5ww[i,"calendar_date"],format="%Y-%m-%d")) )
+                    part5ww[i,"calendar_date"]<-as.character(as.Date(part4[j2,"calendar_date"],format="%d/%m/%Y"))
+                    print(paste("Found duplicate sleeponset and wakeup on ",id5w[i],", so use the closest day",sep="")) 
+                   } 
 } 
 change<-part5ww[S1, c("filename","calendar_date","sleeponset_ts","wakeup_ts", "calendar_date_old")] 
 } else change<-"NO duplicate days" 
@@ -195,8 +202,8 @@ ans<-list(data=part5ww,note=change,N=length(which(duplicated(id5w)))  )
 return(ans)
 }
 
-
-t<-fixDup(part5ww=D[[6]],part4=D[[4]])
+ 
+t<-fixDup(part5ww=D[[6]],part4=sleepFull)
 data<-t$data  #D[[6]] #part5 daysummary
 S2a<-which(data[,"cleaningcode"]>=2) #If the study did not propose a sleep log to the individuals, then all nights are removed with cleaningcode higher than 1.
 S2b<-which(colnames(data) %in% intersect(part6,SLdomain))

@@ -275,6 +275,8 @@ write.csv(nonsleepMatrix,file="nonsleepMatrix.csv",row.names=FALSE)
 nonsleepMatrix<-read.csv("nonsleepMatrix.csv",head=1,stringsAsFactors=FALSE)
 dim(nonsleepMatrix)
 dim(count)
+
+NSam<-function(x) length(setdiff(unique(x),NA))
 ```
 
  
@@ -283,10 +285,10 @@ dim(count)
 
 The activity data at the minute level (`r enmoFN`) was stored in a format of `data.frame` of dimension $(\sum_i d_i) \times `r ncol(D1)`$, where $d_i$ is the number of available days for subject $i$. And the order of the `r ncol(D1)` columns (and corresponding column names) was as follows, `r colnames(D1)[1:Ctop]`, "MIN1", ..., "MIN1440".   
 
-     *  Raw data = (`r dim(D1)`), `r length(unique(D1[,"filename"]))` files, `r length(unique(D1[,"newID"]))` individuals.
-     *  Clean data = (`r dim(D2)`), `r length(unique(D2[,"filename"]))` files, `r length(unique(D2[,"newID"]))` individuals.     
-     *  Rm daysleepers = (`r dim(D3)`), `r length(unique(D3[,"filename"]))` files, `r length(unique(D3[,"newID"]))` individuals.    
-     *  Count data = (`r dim(count)`), `r length(unique(count[,"ID"]))` individuals.    
+     *  Raw data = (`r dim(D1)`), `r length(unique(D1[,"filename"]))` files, `r NSam(D1[,"newID"])` individuals.
+     *  Clean data = (`r dim(D2)`), `r length(unique(D2[,"filename"]))` files, `r NSam(D2[,"newID"])` individuals.     
+     *  Rm daysleepers = (`r dim(D3)`), `r length(unique(D3[,"filename"]))` files, `r NSam(D3[,"newID"])` individuals.    
+     *  Count data = (`r dim(count)`), `r NSam(count[,"ID"])` individuals.    
 
 
 

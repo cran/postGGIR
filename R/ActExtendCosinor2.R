@@ -74,13 +74,26 @@ ActExtendCosinor2 = function(
   e_phi0 = acrotime
   e_par0 = c(e_min0, e_amp0, 0, 2, e_phi0) ## min, amp, alpha, beta, phi
 
-  fit_nls = nls.lm(e_par0, fn = fn_obj,
+  fit_nls<-NULL
+  fit_nls = try(nls.lm(e_par0, fn = fn_obj,
                    lower = lower,
                    upper = upper,
                    tmp.dat = tmp.dat,
-                   control = nls.lm.control(maxiter = 1000))
+                   control = nls.lm.control(maxiter = 1000)))
   ## Estimated exteded cosinor parameters,in the order of
-  ## minimum, amplitude, alpha, beta, acrophase
+  ## minimum, amplitude, alpha, beta, acrophase 
+  ## 5/25 fix nls.lm errors for some individual
+  e_min = NA
+  e_amp = NA
+  e_alpha = NA
+  e_beta = NA
+  e_acrotime = NA  
+  F_pseudo = NA 
+  UpMesor = NA
+  DownMesor = NA
+  MESOR = NA  
+ if (attr(fit_nls,"class")!="try-error"){ 
+
   coef.nls = coef(fit_nls)
 
   e_min = coef.nls[1]
@@ -98,6 +111,7 @@ ActExtendCosinor2 = function(
   UpMesor = -acos(e_alpha)/(2*pi/24) + e_acrotime
   DownMesor = acos(e_alpha)/(2*pi/24) + e_acrotime
   MESOR = e_min + e_amp/2
+  } #if nls.lm is good
 
   ret = list("minimum" = e_min,
              "amp" = e_amp,

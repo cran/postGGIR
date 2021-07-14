@@ -77,7 +77,7 @@ summaryFN1<-paste(currentdir,"/summary/",studyname,"_ggir_output_summary.xlsx",s
 summaryFN2<-paste(currentdir,"/summary/part24daysummary.info.csv",sep="")
 
 sheetName<-c("1_fileList","2_fileSummary","3_dupIDs","4_IDerror","5_NvalidDays","6_Ndays_table","7_missingPattern","8_missingPattern_table","9_final")
-
+ 
   
 D2<-read.xlsx(summaryFN1,head=1,sheetName = sheetName[2])  
 D1<-as.data.frame(cbind(c("GGIR version:","bin files","GGIR folder"),
@@ -88,8 +88,10 @@ D2.story<-paste("For ",studyname," data, there are ",D2[1,4]," unique bin files 
 countunique<-function(x){t<-table(gsub(" Hours","",x))
 return(paste(paste(names(t),collapse="/"),"(freq=",paste(t,collapse="/"),")",sep="")) } 
 Device<-read.xlsx(summaryFN1,head=1,sheetName = "10_deviceInfo") 
-Device.story<-paste("The accelerometer data was measured by the ",countunique(Device[,"monitor.name"])," device in ",countunique(Device[,"sample.frequency.in.Hertz"])," Hertz for ", countunique(Device[,"Measurement_Period"])," hours.",sep="")
+if ("Measurement_Period" %in% colnames(Device)) measPeriod<-countunique(Device[,"Measurement_Period"]) else measPeriod<-"unknown"
+Device.story<-paste("The accelerometer data was measured by the ",countunique(Device[,"monitor.name"])," device in ",countunique(Device[,"sample.frequency.in.Hertz"])," Hertz for ", measPeriod," hours.",sep="")
 ```
+
 Note. Nid(BinFiles) is the number of unique bin files instead of number of subjects.
 
 **`r Device.story`**
@@ -196,7 +198,7 @@ plot(data[,"RowNonWear23"]/4 ,xlab="index of days/ids",ylab="NonWear Hours" ,col
 #plot(data[,"RowNonWear23"]/4,data[,"N.hours"]-data[,"N.valid.hours"],xlab="NonWear Time",ylab="Invalid Hours",main=studyname) 
 #               15minutes /60= 1/4
  
-data2<-aggregate(data$RowNonWear23, by=list(Category=data$filename2), FUN=mean)
+data2<-aggregate(data$RowNonWear23, by=list(Category=data$filename2), FUN=mean,na.rm=TRUE) #nonwear=2,3, unit=15minutes
 plot(data2[,2]/4,  xlab="Subject",ylab="Subject mean of NonWear hours", col="blue")
 hist(data2[,2]/4,  xlab="Subject mean of NonWear hours" , col="orange",main="")
 ```
@@ -232,10 +234,10 @@ try( barplot(t2,xlab="ith day is missing",col="pink" ) )
 
 Check missing pattern of each sample. Most missingness are expected on the first and last day. 
 
-```{r c6plotmissing, echo=FALSE }  
+```{r c6plotmissing, echo=FALSE ,fig.width=10,fig.height=5}  
 par(mfrow=c(1,1)) 
 t6<- table(D9[,"misspattern"])  
-par(mai=c(1.02,2.52,0.82,0 )) # bottom,left,up,right
+par(mai=c(1.02,4.52,0.82,0 )) # bottom,left,up,right
 barplot(t6,main="missing pattern (f>=5)",horiz=TRUE,las=2,col="blue")
 if (length(t6)>=20) {t6<-t6[t6>=5] 
 barplot(t6,main="missing pattern (f>=5)",horiz=TRUE,las=2,col="blue") 
