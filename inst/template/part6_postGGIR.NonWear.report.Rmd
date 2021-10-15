@@ -1,5 +1,5 @@
 ---
-title: 'postGGIR: NonWear matrix in GGIR outputs '
+title: 'postGGIR part 6: NonWear matrix in GGIR outputs '
 author: "Wei Guo"
 date_xxx
 output:

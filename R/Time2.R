@@ -164,9 +164,9 @@ sed_all0<-cbind(sed_all0,temp[,3])
 
 sed_all<-sed_all0
 for (j in 4:6) sed_all[,j]<-sed_all0[,j]-sed_all0[,j-1]
-colnames(sed_all)[3:6]<-c("sed_time","light_time","mod_time","vig_time")
-sed_all[,"MVPA_time"]<-sed_all[,"mod_time"] + sed_all[,"vig_time"]  
-sed_all[,"activity_time"]<-sed_all[,"light_time"] +sed_all[,"mod_time"] + sed_all[,"vig_time"] 
+colnames(sed_all)[3:6]<-c("sed_dur","light_dur","mod_dur","vig_dur")
+sed_all[,"MVPA_dur"]<-sed_all[,"mod_dur"] + sed_all[,"vig_dur"]  
+sed_all[,"activity_dur"]<-sed_all[,"light_dur"] +sed_all[,"mod_dur"] + sed_all[,"vig_dur"] 
 
 minuteNcol=(ncol(count.data)-2)/1440
 

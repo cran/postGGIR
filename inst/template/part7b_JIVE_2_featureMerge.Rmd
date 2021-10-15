@@ -1,5 +1,5 @@
 ---
-title: 'Extracts features from minute level actigraphy data '
+title: 'postGGIR part 7b: Extracts features from minute level actigraphy data '
 author: "Wei Guo"
 date_xxx
 output:
@@ -70,7 +70,7 @@ setwd(currentdir)
 
 ```{r c1head ,include=FALSE}
 #---------------------------------main-body--------------------------------------- 
-
+ 
 foutFN<-function(x,studyname) paste("part7a_",studyname,"_some_features_page",x,".csv",sep="")   
 page1<-read.csv(foutFN("1_features",studyname),nrow=100,head=1,stringsAsFactors=F)
 S1<-which(colnames(page1)=="SubjectLevel")+1
@@ -78,7 +78,7 @@ page1.subjectlevel<-colnames(page1)[S1:ncol(page1)]
 subjectlevel<-c(page1.subjectlevel, paste("PC",1:20,sep="")) 
 
  
-outFN<-paste("part7b_",studyname,"_all_features_",1:9,".csv",sep="")
+outFN<-paste("part7b_",studyname,"_all_features_",1:4,c("_day","_dayclean","_subject","_subjectSD"),".csv",sep="")
 outFN.anno<-paste("part7_",studyname,"_all_features_dictionary.xlsx",sep="") 
   
 library(xlsx)   

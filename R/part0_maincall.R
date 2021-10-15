@@ -22,6 +22,8 @@
 #' @param PA.threshold  \code{number}  Threshold for light, moderate and vigorous physical activity. Default is c(50,100,400).
 #' @param desiredtz \code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern". 
 #' @param RemoveDaySleeper  \code{logical}  Specify if the daysleeper nights are removed from the calculation of number of valid days for each subject. Default is FALSE. 
+#' @param part5FN   \code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M125V500_T5A5", which means that part5_daysummary_WW_L50M125V500_T5A5.csv and part5_personsummary_WW_L50M125V500_T5A5.csv are used in the analysis. 
+#' @param NfileEachBundle  \code{number}  Number of files in each bundle when the csv data were read and processed in a cluster. Default is 20. 
 #' @param trace  \code{logical}  Specify if the intermediate results is printed when the function was executed. Default is FALSE.
 #'
 #' @importFrom stats na.omit reshape
@@ -48,7 +50,7 @@
 
 
 afterggir<-function(mode,useIDs.FN=NULL,currentdir,studyname,bindir=NULL,
-outputdir, epochIn=5,epochOut=5,flag.epochOut=60,log.multiplier=9250,use.cluster=TRUE,QCdays.alpha=7,QChours.alpha=16,QCnights.feature.alpha=c(0,0), Rversion="R",filename2id=NULL,PA.threshold=c(50,100,400),desiredtz="US/Eastern",RemoveDaySleeper=FALSE,trace=FALSE){
+outputdir, epochIn=5,epochOut=5,flag.epochOut=60,log.multiplier=9250,use.cluster=TRUE,QCdays.alpha=7,QChours.alpha=16,QCnights.feature.alpha=c(0,0), Rversion="R",filename2id=NULL,PA.threshold=c(50,100,400),desiredtz="US/Eastern",RemoveDaySleeper=FALSE,part5FN="WW_L50M125V500_T5A5",NfileEachBundle=20,trace=FALSE){
 
 print(paste("mode=",mode,sep="")) 
 print(paste("useIDs.FN=",useIDs.FN,sep="")) 
@@ -69,7 +71,7 @@ writedir="data" #for merge csv
 Rline.swFN<-"part1_data.transform.R"
 swFN<-"part1_data.transform.sw"
 swFN2<-"part1_data.transform.merge.sw"
-nfeach<-20 #split in biowulf,~4-5 minutes/file 
+nfeach<-NfileEachBundle # 20 #split in biowulf,~4-5 minutes/file 
 
 #-------------end fill-----------------------
  
@@ -137,7 +139,7 @@ try(system(catlines[2]))
 #########################################################################  
 # (2) Get summary of ggir output
 ######################################################################### 
-part5FN=paste("WW_L",PA.threshold[1],"M",PA.threshold[2],"V",PA.threshold[3],"_T5A5",sep="") #MM 11062020 #WW 12/11
+if (is.null(part5FN)) part5FN=paste("WW_L",PA.threshold[1],"M",PA.threshold[2],"V",PA.threshold[3],"_T5A5",sep="") #MM 11062020 #WW 12/11
 
 if (2 %in% mode ){
 print("# (2a) Get summary of ggir output---------------------------") 
@@ -228,24 +230,19 @@ edit.report(inFN="part7a_JIVE_1_featureExtraction.Rmd" ,outFN4c,L)
  
 outFN4d<-paste("part7b_",studyname,"_postGGIR_JIVE_2_allfeatures.Rmd",sep="")
 edit.report(inFN="part7b_JIVE_2_featureMerge.Rmd" ,outFN4d,L)   
-#---------------------------------------------------------------
-#  jive3
- 
-outFN4e<-paste("part7c_",studyname,"_postGGIR_JIVE_3_excelReport.Rmd",sep="")
-edit.report(inFN="part7c_JIVE_3_excelReport.Rmd" ,outFN4e,L)  
-#---------------------------------------------------------------
+#--------------------------------------------------------------- 
 #  jive4
  
-outFN4f<-paste("part7d_",studyname,"_postGGIR_JIVE_4_outputReport.Rmd",sep="")
-edit.report(inFN="part7d_JIVE_4_runJive.Rmd" ,outFN4f,L)  
+outFN4f<-paste("part7c_",studyname,"_postGGIR_JIVE_3_runJIVE.Rmd",sep="")
+edit.report(inFN="part7c_JIVE_3_runJIVE.Rmd" ,outFN4f,L)  
 #---------------------------------------------------------------
 #  jive5
  
-outFN4g<-paste("part7e_",studyname,"_postGGIR_JIVE_5_somefeatures_weekday.Rmd",sep="")
-edit.report(inFN="part7e_JIVE_5_somefeatures_weekday.Rmd" ,outFN4g,L)  
+outFN4g<-paste("part7d_",studyname,"_postGGIR_JIVE_4_somefeatures_weekday.Rmd",sep="")
+edit.report(inFN="part7d_JIVE_4_somefeatures_weekday.Rmd" ,outFN4g,L)  
  
 
-outFN4_rmd<-c(outFN4a,outFN4b,outFN4c,outFN4d,outFN4e,outFN4f,outFN4g)  
+outFN4_rmd<-c(outFN4a,outFN4b,outFN4c,outFN4d,   outFN4f,outFN4g)  
 #########################################################################  
 # (6) sw
 #########################################################################

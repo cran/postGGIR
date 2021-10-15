@@ -4,18 +4,16 @@ print(argv)
 print(paste("length=",length(argv),sep=""))  
 mode<-as.numeric(argv[1])  
 print(c("mode =", mode))
+# (Note) Please remove the above lines if you are running this within R console 
+#        instead of submitting jobs to a cluster.
  
-#########################################################################  
-# (user-define 1) you got to redefine this according different study!!!!
+#########################################################################   
+# (user-define 1) you need to redefine this according different study!!!!
 ######################################################################### 
+# example 1 
+filename2id.1<-function(x)  unlist(strsplit(y1,"\\."))[1] 
  
-filename2id.1<-function(x) {
-  y1<-unlist(strsplit(x,"\\_"))[1]
-  y2<-unlist(strsplit(y1,"\\."))[1]
-  return(y2)
-} 
- 
-# nimh (use csv file =c("filename","ggirID")) 
+#  example 2 (use csv file =c("filename","ggirID")) 
 filename2id.2<-function(x) {
   d<-read.csv("./postGGIR/inst/example/filename2id.csv",head=1,stringsAsFactors=F)
   y1<-which(d[,"filename"]==x)
@@ -29,20 +27,24 @@ filename2id.2<-function(x) {
 #  main call
 ######################################################################### 
   
-call.afterggir<-function(mode,rmDup=FALSE,filename2id=filename2id.1){ 
+call.afterggir<-function(mode,filename2id=filename2id.1){ 
 
 library(postGGIR) 
-#################################################   
+packageVersion("postGGIR")
+
+#########################################################################  
 # (user-define 2) Fill in parameters of your ggir output
-################################################# 
- 
- 
-currentdir =
- 
+########################################################################## 
+  
+currentdir = 
 studyname =
 bindir = 
-outputdir = 
- 
+outputdir =  
+setwd(currentdir) 
+
+rmDup=FALSE   # keep all subjects in postGGIR
+PA.threshold=c(50,100,400)
+part5FN="WW_L50M125V500_T5A5" 
 epochIn = 5
 epochOut = 5
 flag.epochOut = 60
@@ -51,7 +53,12 @@ log.multiplier = 9250
 QCdays.alpha = 7
 QChours.alpha = 16 
 useIDs.FN<-NULL 
-setwd(currentdir) 
+Rversion="R" 
+desiredtz="US/Eastern" 
+RemoveDaySleeper=FALSE 
+part5FN=part5FN,
+NfileEachBundle=20 
+trace=FALSE
 #########################################################################  
 #   remove duplicate sample IDs for plotting and feature extraction 
 ######################################################################### 
@@ -63,10 +70,9 @@ setwd(sumdir)
 inFN<-paste(studyname,"_samples_remove_temp.csv",sep="")
 useIDs.FN<-paste(sumdir,"/",studyname,"_samples_remove.csv",sep="") 
 
-
-#################################################   
+#########################################################################  
 # (user-define 3 as rmDup=TRUE)  create useIDs.FN file
-#################################################  
+######################################################################### 
 # step 2: create the ./summary/*remove.csv file manually or by R commands
 d<-read.csv(inFN,head=1,stringsAsFactors=F)
 d<-d[order(d[,"Date"]),]
@@ -79,25 +85,43 @@ write.csv(d,file=useIDs.FN,row.names=F)
 } 
 
 #########################################################################  
-#  maincall
+#   call afterggir
 ######################################################################### 
 
 setwd(currentdir)  
-afterggir(mode=mode,useIDs.FN,currentdir,studyname,bindir,
-outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,QCdays.alpha=QCdays.alpha,QChours.alpha=QChours.alpha, filename2id=filename2id)
-  
+afterggir(mode=mode,
+          useIDs.FN=useIDs.FN,
+          currentdir=currentdir,
+          studyname=studyname,
+          bindir=bindir,
+          outputdir=outputdir,
+          epochIn=epochIn,
+          epochOut=epochOut,
+          flag.epochOut=flag.epochOut,
+          log.multiplier=log.multiplier,
+          use.cluster=use.cluster,
+          QCdays.alpha=QCdays.alpha,
+          QChours.alpha=QChours.alpha,
+          QCnights.feature.alpha=QCnights.feature.alpha, 
+          Rversion=Rversion,
+          filename2id=filename2id,
+          PA.threshold=PA.threshold,
+          desiredtz=desiredtz,
+          RemoveDaySleeper=RemoveDaySleeper,
+          part5FN=part5FN,
+          NfileEachBundle=NfileEachBundle,
+          trace=trace) 
 
 } 
-##############################################
-call.afterggir(mode)   
-############################################## 
+#########################################################################
+          call.afterggir(mode)   
+######################################################################### 
 
-#   Note:   call.afterggir(mode=0)
-#        mode =0 : creat sw/Rmd file
-#        mode =1 : data transform using cluster or not
-#        mode =2 : summary
-#        mode =3 : clean 
-#        mode =4 : impu
+#   Note:   call.afterggir(mode)
+#        mode = 0 : creat sw/Rmd file
+#        mode = 1 : data transform using cluster or not
+#        mode = 2 : summary
+#        mode = 3 : clean 
+#        mode = 4 : impu
  
-
-
+ 

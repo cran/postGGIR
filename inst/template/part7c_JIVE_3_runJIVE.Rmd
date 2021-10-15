@@ -1,5 +1,5 @@
 ---
-title: 'Perform JIVE Decomposition for All Features using r.jive '
+title: 'postGGIR part 7c: Perform JIVE Decomposition for All Features using r.jive '
 author: "Wei Guo"
 date_xxx
 output:
@@ -77,9 +77,9 @@ return(d1[S0,])
 
 
 ```{r c3, results="hide"}  
-inFN<-paste("part7b_",studyname,"_all_features_",3:4,".csv",sep="")  
-jiveOutFN<-paste("part7d_",studyname,"_jive_Decomposition.csv",sep="")  
-scoreOutFN<-paste("part7d_",studyname,"_jive_predScore.csv",sep="")  
+inFN<-paste("part7b_",studyname,"_all_features_",1:4,c("_day","_dayclean","_subject","_subjectSD"),".csv",sep="")[3:4]
+jiveOutFN<-paste("part7c_",studyname,"_jive_Decomposition.csv",sep="")  
+scoreOutFN<-paste("part7c_",studyname,"_jive_predScore.csv",sep="")  
 
 
 domainName<-c("SL","PA","CR")  
@@ -94,7 +94,7 @@ nopoly<-colnames(d0)[which(ncat==1)]
  
 sleepC1<-which(colnames(d0)=="sleeponset") #6/5/2020
 paC2<-which(colnames(d0)=="TAC")
-crC3<-which(colnames(d0)=="RA_ggir")  
+crC3<-which(colnames(d0)=="L5TIME_num")  
 crC4<-which(colnames(d0)=="PC10")
 S1<-c(sleepC1,paC2,crC3,crC4+1)
 
@@ -177,7 +177,7 @@ jive.filenames<-jive.filenames[-S9]
 action<-"Remove"
 dclean<-d[-which(d[,1] %in% S0[,1]),]
 } else action<-"Found but keep"
-jive.data.outFN<-paste("part7d_",studyname,"_jive_Input.csv",sep="")
+jive.data.outFN<-paste("part7c_",studyname,"_jive_Input.csv",sep="")
 write.csv(dclean,file=jive.data.outFN,row.names=F)
  
 if (length(S9)>=1 ){    

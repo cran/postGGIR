@@ -1,5 +1,5 @@
 ---
-title: 'Extracts Weekends/Weekday Features of Domains of Physical Activity, Sleep and Circadian Rhythmicity '
+title: 'postGGIR part 7d: Extracts Weekends/Weekday Features of Domains of Physical Activity, Sleep and Circadian Rhythmicity '
 author: "Wei Guo"
 date_xxx
 output:
@@ -40,7 +40,7 @@ flag.epochOut_xxx
 epochOut<-flag.epochOut
 
 
-foutFN<-function(x,studyname) paste("part7e_",studyname,"_some_features_page",x,".csv",sep="") #make file name
+foutFN<-function(x,studyname) paste("part7d_",studyname,"_some_features_page",x,".csv",sep="")  
 setwd(currentdir) 
 ```
 
@@ -313,7 +313,12 @@ sum(Z2$nu[[2]])/Z2$totvar
 
 Z2$totvar
 subject_PCs<-cbind(idM.avg2,Z2$xi[[1]]  ) 
-day_PCs<-cbind(idM.f,Z2$xi[[2]]  )
+day_PCs<-cbind(idM.f,Z2$xi[[2]]  ) 
+colnames(subject_PCs)[(ncol(idM.avg2)+1): ncol(subject_PCs)]<-paste("PC",1:ncol(Z2$xi[[1]]),sep="")
+colnames(day_PCs)[(ncol(idM.f)+1): ncol(day_PCs)]<-paste("PC",1:ncol(Z2$xi[[2]]),sep="")
+
+
+
 
 if (f==1) Z2.save.1<-Z2 else Z2.save.2<-Z2
 
@@ -360,12 +365,12 @@ legend('topleft',co=1:4,
 
 ```{r faceMask} 
 ftitle<-c("weekday", "weekend")
-inFN<-paste("part7b_",studyname,"_all_features_2.csv",sep="") #clean file (must have TAC)
-outFN<-paste("part7e_",ftitle,"_",studyname,"_all_features_3.csv",sep="")
+inFN<-paste("part7b_",studyname,"_all_features_2_dayclean.csv",sep="") #clean file (must have TAC)
+outFN<-paste("part7d_",ftitle,"_",studyname,"_all_features_3_subject.csv",sep="")
 feature<-read.csv(inFN,head=1,stringsAsFactors=F)
-wdwefea<-read.csv(paste("part7e_",studyname,"_some_features_page1.csv",sep=""),head=1,stringsAsFactors=F)  
+wdwefea<-read.csv(paste("part7d_",studyname,"_some_features_page1.csv",sep=""),head=1,stringsAsFactors=F)  
  
-pcFN<-paste("part7e_",ftitle,"_",studyname,"_some_features_page5_denseFLMM_subject_PCs.csv",sep="")
+pcFN<-paste("part7d_",ftitle,"_",studyname,"_some_features_page5_denseFLMM_subject_PCs.csv",sep="")
 
 
 # set mean=NA for those features with Nvalid night< 3 or 7.

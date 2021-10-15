@@ -12,7 +12,7 @@
 
 <meta name="author" content="Wei Guo" />
 
-<meta name="date" content="2021-07-14" />
+<meta name="date" content="2021-10-15" />
 
 <title>postGGIR</title>
 
@@ -143,7 +143,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">postGGIR</h1>
 <h4 class="author">Wei Guo</h4>
-<h4 class="date">July 14, 2021</h4>
+<h4 class="date">October 15, 2021</h4>
 
 
 
@@ -197,90 +197,123 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;length=&quot;</span>,<span class="fu">length</span>(argv),<span class="at">sep=</span><span class="st">&quot;&quot;</span>))  </span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>mode<span class="ot">&lt;-</span><span class="fu">as.numeric</span>(argv[<span class="dv">1</span>])  </span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">c</span>(<span class="st">&quot;mode =&quot;</span>, mode))</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 1) you got to redefine this according different study!!!!</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># colaus </span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>filename2id<span class="fl">.1</span><span class="ot">&lt;-</span><span class="cf">function</span>(x) {</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  y1<span class="ot">&lt;-</span><span class="fu">unlist</span>(<span class="fu">strsplit</span>(x,<span class="st">&quot;</span><span class="sc">\\</span><span class="st">_&quot;</span>))[<span class="dv">1</span>]</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  y2<span class="ot">&lt;-</span><span class="fu">unlist</span>(<span class="fu">strsplit</span>(y1,<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>))[<span class="dv">1</span>]</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(y2)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># nimh (use csv file =c(&quot;filename&quot;,&quot;ggirID&quot;)) </span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>filename2id<span class="fl">.2</span><span class="ot">&lt;-</span><span class="cf">function</span>(x) {</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">&quot;./postGGIR/inst/example/filename2id.csv&quot;</span>,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  y1<span class="ot">&lt;-</span><span class="fu">which</span>(d[,<span class="st">&quot;filename&quot;</span>]<span class="sc">==</span>x)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(y1)<span class="sc">==</span><span class="dv">0</span>) <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">&quot;Missing &quot;</span>,x,<span class="st">&quot; in filename2id.csv file&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(y1)<span class="sc">&gt;=</span><span class="dv">1</span>) y2<span class="ot">&lt;-</span>d[y1[<span class="dv">1</span>],<span class="st">&quot;newID&quot;</span>] </span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">as.character</span>(y2))</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#  main call</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>call.afterggir<span class="ot">&lt;-</span><span class="cf">function</span>(mode,<span class="at">rmDup=</span><span class="cn">FALSE</span>,<span class="at">filename2id=</span>filename2id<span class="fl">.1</span>){ </span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(postGGIR) </span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################   </span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 2) Fill in parameters of your ggir output</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################  </span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>currentdir <span class="ot">=</span> </span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>studyname <span class="ot">=</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>bindir <span class="ot">=</span> </span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>outputdir <span class="ot">=</span> </span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>epochIn <span class="ot">=</span> <span class="dv">5</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>epochOut <span class="ot">=</span> <span class="dv">5</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>flag.epochOut <span class="ot">=</span> <span class="dv">60</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>use.cluster <span class="ot">=</span> <span class="cn">FALSE</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>log.multiplier <span class="ot">=</span> <span class="dv">9250</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>QCdays.alpha <span class="ot">=</span> <span class="dv">7</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>QChours.alpha <span class="ot">=</span> <span class="dv">16</span> </span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="cn">NULL</span> </span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir) </span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="co">#   remove duplicate sample IDs for plotting and feature extraction </span></span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mode<span class="sc">==</span><span class="dv">3</span> <span class="sc">&amp;</span> rmDup){</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># step 1: read ./summary/*remove_temp.csv file (output of mode=2)</span></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>keep.last<span class="ot">&lt;-</span><span class="cn">TRUE</span> <span class="co">#keep the latest visit for each sample</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>sumdir<span class="ot">&lt;-</span><span class="fu">paste</span>(currentdir,<span class="st">&quot;/summary&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(sumdir)  </span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>inFN<span class="ot">&lt;-</span><span class="fu">paste</span>(studyname,<span class="st">&quot;_samples_remove_temp.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="fu">paste</span>(sumdir,<span class="st">&quot;/&quot;</span>,studyname,<span class="st">&quot;_samples_remove.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################   </span></span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 3 as rmDup=TRUE)  create useIDs.FN file</span></span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="do">#################################################  </span></span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="co"># step 2: create the ./summary/*remove.csv file manually or by R commands</span></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(inFN,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;Date&quot;</span>]),]</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;newID&quot;</span>]),]</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>d[<span class="fu">which</span>(<span class="fu">is.na</span>(d[,<span class="st">&quot;newID&quot;</span>])),]</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>S<span class="ot">&lt;-</span><span class="fu">duplicated</span>(d[,<span class="st">&quot;newID&quot;</span>],<span class="at">fromLast=</span>keep.last) <span class="co">#keep the last copy for nccr</span></span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>d[S,<span class="st">&quot;duplicate&quot;</span>]<span class="ot">&lt;-</span><span class="st">&quot;remove&quot;</span></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(d,<span class="at">file=</span>useIDs.FN,<span class="at">row.names=</span>F) </span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="co">#  maincall</span></span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir)  </span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">afterggir</span>(<span class="at">mode=</span>mode,useIDs.FN,currentdir,studyname,bindir,</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,<span class="at">QCdays.alpha=</span>QCdays.alpha,<span class="at">QChours.alpha=</span>QChours.alpha,<span class="at">Rversion=</span><span class="st">&quot;R/3.6.3&quot;</span>,<span class="at">filename2id=</span>filename2id) </span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################</span></span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="fu">call.afterggir</span>(mode)   </span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="do">##############################################  </span></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="co">#   Note:   call.afterggir(mode=0)</span></span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =0 : creat sw/Rmd file</span></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =1 : data transform using cluster or not</span></span>
-<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =2 : summary</span></span>
-<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =3 : clean </span></span>
-<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode =4 : impu</span></span></code></pre></div>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># (Note) Please remove the above lines if you are running this within R console </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#        instead of submitting jobs to a cluster.</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################   </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 1) you need to redefine this according different study!!!!</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># example 1 </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>filename2id<span class="fl">.1</span><span class="ot">&lt;-</span><span class="cf">function</span>(x)  <span class="fu">unlist</span>(<span class="fu">strsplit</span>(y1,<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>))[<span class="dv">1</span>] </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#  example 2 (use csv file =c(&quot;filename&quot;,&quot;ggirID&quot;)) </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>filename2id<span class="fl">.2</span><span class="ot">&lt;-</span><span class="cf">function</span>(x) {</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">&quot;./postGGIR/inst/example/filename2id.csv&quot;</span>,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  y1<span class="ot">&lt;-</span><span class="fu">which</span>(d[,<span class="st">&quot;filename&quot;</span>]<span class="sc">==</span>x)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(y1)<span class="sc">==</span><span class="dv">0</span>) <span class="fu">stop</span>(<span class="fu">paste</span>(<span class="st">&quot;Missing &quot;</span>,x,<span class="st">&quot; in filename2id.csv file&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(y1)<span class="sc">&gt;=</span><span class="dv">1</span>) y2<span class="ot">&lt;-</span>d[y1[<span class="dv">1</span>],<span class="st">&quot;newID&quot;</span>] </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">as.character</span>(y2))</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#  main call</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>call.afterggir<span class="ot">&lt;-</span><span class="cf">function</span>(mode,<span class="at">filename2id=</span>filename2id<span class="fl">.1</span>){ </span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(postGGIR) </span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 2) Fill in parameters of your ggir output</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">########################################################################## </span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>currentdir <span class="ot">=</span> </span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>studyname <span class="ot">=</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>bindir <span class="ot">=</span> </span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>outputdir <span class="ot">=</span>  </span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir) </span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>rmDup<span class="ot">=</span><span class="cn">FALSE</span>   <span class="co"># keep all subjects in postGGIR</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>PA.threshold<span class="ot">=</span><span class="fu">c</span>(<span class="dv">50</span>,<span class="dv">100</span>,<span class="dv">400</span>)</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>part5FN<span class="ot">=</span><span class="st">&quot;WW_L50M125V500_T5A5&quot;</span> </span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>epochIn <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>epochOut <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>flag.epochOut <span class="ot">=</span> <span class="dv">60</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>use.cluster <span class="ot">=</span> <span class="cn">FALSE</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>log.multiplier <span class="ot">=</span> <span class="dv">9250</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>QCdays.alpha <span class="ot">=</span> <span class="dv">7</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>QChours.alpha <span class="ot">=</span> <span class="dv">16</span> </span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="cn">NULL</span> </span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>Rversion<span class="ot">=</span><span class="st">&quot;R&quot;</span> </span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>desiredtz<span class="ot">=</span><span class="st">&quot;US/Eastern&quot;</span> </span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>RemoveDaySleeper<span class="ot">=</span><span class="cn">FALSE</span> </span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>part5FN<span class="ot">=</span>part5FN,</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>NfileEachBundle<span class="ot">=</span><span class="dv">20</span> </span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>trace<span class="ot">=</span><span class="cn">FALSE</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co">#   remove duplicate sample IDs for plotting and feature extraction </span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mode<span class="sc">==</span><span class="dv">3</span> <span class="sc">&amp;</span> rmDup){</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="co"># step 1: read ./summary/*remove_temp.csv file (output of mode=2)</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>keep.last<span class="ot">&lt;-</span><span class="cn">TRUE</span> <span class="co">#keep the latest visit for each sample</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>sumdir<span class="ot">&lt;-</span><span class="fu">paste</span>(currentdir,<span class="st">&quot;/summary&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)  </span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(sumdir)  </span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>inFN<span class="ot">&lt;-</span><span class="fu">paste</span>(studyname,<span class="st">&quot;_samples_remove_temp.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>useIDs.FN<span class="ot">&lt;-</span><span class="fu">paste</span>(sumdir,<span class="st">&quot;/&quot;</span>,studyname,<span class="st">&quot;_samples_remove.csv&quot;</span>,<span class="at">sep=</span><span class="st">&quot;&quot;</span>) </span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co"># (user-define 3 as rmDup=TRUE)  create useIDs.FN file</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="co"># step 2: create the ./summary/*remove.csv file manually or by R commands</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span><span class="fu">read.csv</span>(inFN,<span class="at">head=</span><span class="dv">1</span>,<span class="at">stringsAsFactors=</span>F)</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;Date&quot;</span>]),]</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>d<span class="ot">&lt;-</span>d[<span class="fu">order</span>(d[,<span class="st">&quot;newID&quot;</span>]),]</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>d[<span class="fu">which</span>(<span class="fu">is.na</span>(d[,<span class="st">&quot;newID&quot;</span>])),]</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>S<span class="ot">&lt;-</span><span class="fu">duplicated</span>(d[,<span class="st">&quot;newID&quot;</span>],<span class="at">fromLast=</span>keep.last) <span class="co">#keep the last copy for nccr</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>d[S,<span class="st">&quot;duplicate&quot;</span>]<span class="ot">&lt;-</span><span class="st">&quot;remove&quot;</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(d,<span class="at">file=</span>useIDs.FN,<span class="at">row.names=</span>F)</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################  </span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="co">#   call afterggir</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(currentdir)  </span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="fu">afterggir</span>(<span class="at">mode=</span>mode,</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>          <span class="at">useIDs.FN=</span>useIDs.FN,</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>          <span class="at">currentdir=</span>currentdir,</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a>          <span class="at">studyname=</span>studyname,</span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>          <span class="at">bindir=</span>bindir,</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>          <span class="at">outputdir=</span>outputdir,</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>          <span class="at">epochIn=</span>epochIn,</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>          <span class="at">epochOut=</span>epochOut,</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>          <span class="at">flag.epochOut=</span>flag.epochOut,</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>          <span class="at">log.multiplier=</span>log.multiplier,</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>          <span class="at">use.cluster=</span>use.cluster,</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>          <span class="at">QCdays.alpha=</span>QCdays.alpha,</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>          <span class="at">QChours.alpha=</span>QChours.alpha,</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>          <span class="at">QCnights.feature.alpha=</span>QCnights.feature.alpha, </span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>          <span class="at">Rversion=</span>Rversion,</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>          <span class="at">filename2id=</span>filename2id,</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>          <span class="at">PA.threshold=</span>PA.threshold,</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>          <span class="at">desiredtz=</span>desiredtz,</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>          <span class="at">RemoveDaySleeper=</span>RemoveDaySleeper,</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>          <span class="at">part5FN=</span>part5FN,</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>          <span class="at">NfileEachBundle=</span>NfileEachBundle,</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>          <span class="at">trace=</span>trace) </span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="do">#########################################################################</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>          <span class="fu">call.afterggir</span>(mode)   </span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="do">######################################################################### </span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="co">#   Note:   call.afterggir(mode)</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode = 0 : creat sw/Rmd file</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode = 1 : data transform using cluster or not</span></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode = 2 : summary</span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode = 3 : clean </span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="co">#        mode = 4 : impu</span></span></code></pre></div>
 </div>
 <div id="edit-shell-script" class="section level2">
 <h2>Edit shell script</h2>
@@ -305,20 +338,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </thead>
 <tbody>
 <tr class="odd">
-<td>currentdir</td>
-<td>Directory where the output needs to be stored. Note that this directory must exist</td>
+<td>rmDup</td>
+<td>Set rmDup = TRUE if user want to remove some samples such as duplicates. Set rmDup = FALSE if user want to keep all samples.</td>
 </tr>
 <tr class="even">
-<td>studyname</td>
-<td>Specify the study name that used in the output file names. Give this variable an appropriate name as it will be used later to specify output file names.</td>
+<td>mode</td>
+<td>Specify which of the five parts need to be run, e.g. mode = 0 makes that all R/Rmd/sh files are generated for other parts. When mode = 1, all csv files in the GGIR output directory were read, transformed and then merged. When mode = 2, the GGIR output files were checked and summarized in one excel sheet. When mode = 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. When mode = 4, the cleaned data was imputed.</td>
 </tr>
 <tr class="odd">
-<td>bindir</td>
-<td>Directory where the accelerometer files are stored or list</td>
+<td>useIDs.FN</td>
+<td>Filename with or without directory for sample information in CSV format, which including “filename” and “duplicate” in the headlines at least. If duplicate=“remove”, the accelerometer files will not be used in the data analysis of part 5-7. Defaut is NULL, which makes all accelerometer files will be used in part 5-7.</td>
 </tr>
 <tr class="even">
-<td>binfile.list</td>
-<td>File list of bin files when running GGIR. Default is NULL, but it has to be a filename in the .csv format when bindir=NULL.</td>
+<td>currentdir</td>
+<td>Directory where the output needs to be stored. Note that this directory must exist.</td>
+</tr>
+<tr class="odd">
+<td>studyname</td>
+<td>Specify the study name that used in the output file names</td>
+</tr>
+<tr class="even">
+<td>bindir</td>
+<td>Directory where the accelerometer files are stored or list</td>
 </tr>
 <tr class="odd">
 <td>outputdir</td>
@@ -338,7 +379,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tr>
 <tr class="odd">
 <td>log.multiplier</td>
-<td>The coefficient used in the log transformation of the ENMO data, i.e. log( log.multiplier * ENMO + 1), which have been used in part2a_postGGIR.report and part5. Defaut is 9250.</td>
+<td>The coefficient used in the log transformation of the ENMO data, i.e. log( log.multiplier * ENMO + 1), which have been used in part 5-7. Defaut is 9250.</td>
 </tr>
 <tr class="even">
 <td>use.cluster</td>
@@ -351,6 +392,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <tr class="even">
 <td>QChours.alpha</td>
 <td>Minimum required number of valid hours in day specific analysis as a quality control step in part2. Default is 16 hours.</td>
+</tr>
+<tr class="odd">
+<td>QCnights.feature.alpha</td>
+<td>Minimum required number of valid nights in day specific mean and SD analysis as a quality control step in the JIVE analysis. Default is c(0,0), i.e. no additional data cleaning in this step.</td>
+</tr>
+<tr class="even">
+<td>Rversion</td>
+<td>R version, eg. “R/3.6.3”. Default is “R”.</td>
+</tr>
+<tr class="odd">
+<td>filename2id</td>
+<td>User defined function for converting filename to sample IDs. Default is NULL.</td>
+</tr>
+<tr class="even">
+<td>PA.threshold</td>
+<td>Threshold for light, moderate and vigorous physical activity. Default is c(50,100,400).</td>
+</tr>
+<tr class="odd">
+<td>desiredtz</td>
+<td>desired timezone: see also <a href="https://en.wikipedia.org/wiki/Zone.tab" class="uri">https://en.wikipedia.org/wiki/Zone.tab</a>. Used in g.inspectfile(). Default is “US/Eastern”.</td>
+</tr>
+<tr class="even">
+<td>RemoveDaySleeper</td>
+<td>Specify if the daysleeper nights are removed from the calculation of number of valid days for each subject. Default is FALSE.</td>
+</tr>
+<tr class="odd">
+<td>part5FN</td>
+<td>Specify which output is used in the GGIR part5 results. Defaut is “WW_L50M125V500_T5A5”, which means that part5_daysummary_WW_L50M125V500_T5A5.csv and part5_personsummary_WW_L50M125V500_T5A5.csv are used in the analysis.</td>
+</tr>
+<tr class="even">
+<td>NfileEachBundle</td>
+<td>Number of files in each bundle when the csv data were read and processed in a cluster. Default is 20.</td>
+</tr>
+<tr class="odd">
+<td>trace</td>
+<td>Specify if the intermediate results is printed when the function was executed. Default is FALSE.</td>
 </tr>
 </tbody>
 </table>
@@ -373,7 +450,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="run-r-script" class="section level2">
 <h2>Run R script</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">call.afterggir</span>(mode,<span class="at">rmDup=</span><span class="cn">FALSE</span>)   </span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">call.afterggir</span>(mode,filename2id)   </span></code></pre></div>
 <table>
 <colgroup>
 <col width="24%" />
@@ -387,12 +464,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </thead>
 <tbody>
 <tr class="odd">
-<td>rmDup</td>
-<td>Set rmDup = TRUE if user want to remove some samples such as duplicates. Set rmDup = FALSE if user want to keep all samples.</td>
-</tr>
-<tr class="even">
 <td>mode</td>
 <td>Specify which of the five parts need to be run, e.g. mode = 0 makes that all R/Rmd/sh files are generated for other parts. When mode = 1, all csv files in the GGIR output directory were read, transformed and then merged. When mode = 2, the GGIR output files were checked and summarized in one excel sheet. When mode = 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. When mode = 4, the cleaned data was imputed.</td>
+</tr>
+<tr class="even">
+<td>filename2id</td>
+<td>This user-defined function will change the filename of the raw accelerometer file to the short ID for the purpose of identifying duplicate IDs.</td>
 </tr>
 </tbody>
 </table>
@@ -421,12 +498,40 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>     R <span class="sc">-</span>e <span class="st">&quot;rmarkdown::render(&#39;part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd&#39;   )&quot;</span> </span></code></pre></div>
 </div>
 </div>
-<div id="inspecting-the-results" class="section level1">
-<h1>Inspecting the results</h1>
-<div id="output-of-part-0" class="section level2">
-<h2>Output of part 0</h2>
+<div id="software-functionalities" class="section level1">
+<h1>Software Functionalities</h1>
+<div id="part-1" class="section level2">
+<h2>Part 1</h2>
+<p>The functions of part 1 read the activity data measured by Euclidian norm minus one (ENMO) in long csv-spreadsheets and then the data was merged and transformed into a square matrix for all subjects. To be noted, a day could have 23 or 25 hours when daylight saving time started or ended. The ENMO data would take the average for those duplicate timestamps caused by daylight saving time so as to be merged systematically with other regular 24-hour days. In addition, the angle of the z-axis (ANGLEZ) relative to the horizontal plane (degrees) utilizing all three axes was also merged and saved into an excel file. Besides that, more data were output including the light mean, light peak, temperature mean and clipping score and Euclidian norm metric (EN) if available. All outputs were stored under the ./data directory for part 1.</p>
+</div>
+<div id="part-2" class="section level2">
+<h2>Part 2</h2>
+<p>The functions of part 2 introduced some descriptive variables of all accelerometer files in the GGIR output. In part 2, an excel file was output under the ./summary directory, which includes nine pages as follows, 1) List of files in the GGIR output (2) Summary of numbers of output files (3) List of duplicate IDs (4) ID errors (5) Number of valid days (6) Table of number of valid/missing days (7) Missing pattern (8) Frequency of the missing pattern (9) Description of all accelerometer files. Multiple plots were generated in a pdf file including the number of valid hours, days, missing pattern, etc. Technically, the raw accelerometer data was visited to obtain a complete input list for the purpose of examining missingness of GGIR output when user specified the path. Additionally, the summary results from GGIR output were also visited here to form a comprehensive data quality report in the part 2 of postGGIR.</p>
+</div>
+<div id="part-3-and-part-4" class="section level2">
+<h2>Part 3 and Part 4</h2>
+<p>The functions of part 3 introduced some ‘flag’ variables for data cleaning of the merged ENMO and ANGLEZ data. As default, only days with more than 16 hours were marked as valid days and subjects with more than 7 valid days were marked as valid samples. User could specify these two parameters in the main function. Further, the data could be aggregated into minute-level or hour-level data as required by users. In part 4, the ENMO data was imputed by taking the subject-level mean over all the valid days for each subject. All output was stored under the ./data directory. In the output file, a few description variables were included as follows (1) the number of valid hours; (2) missing pattern for each subject; (3) non-wear time in minutes; (4) an indicator variable to indicate if the visit should be removed for having multiple visits and (5) the number of missing values after imputation. Samples were removed when systematic missingness was observed, i.e., the activity data was missing on same timestamps among all days and therefore could not be imputed.</p>
+</div>
+<div id="part-5" class="section level2">
+<h2>Part 5</h2>
+<p>The functions of part 5 generated a comprehensive report in the .html format, which included data quality check and an exploratory data analysis. In the report, first, the file lists were summarized in each GGIR folders and summary files so that user could easily check the missingness in each GGIR parts. Second, the duplicate samples were checked and marked, where the duplication might be caused by having multiply visits for some samples but only one visit will be kept in the data analysis such as functional principal component analysis (FPCA). Thirdly, as shown in Figure 1, data quality was checked such as the number of valid days, non-wear time and missing pattern, which was helpful to better understand the data by the graphical presentation. As an exploratory analysis, the data correlation, and the output of FPCA analysis was plotted in the report.</p>
+</div>
+<div id="part-6-optional" class="section level2">
+<h2>Part 6 (Optional)</h2>
+<p>The non-wear data was loaded from the M<span class="math inline">\(metalong\)</span>nonwearscore variable of the R data that was stored in the folder of /meta/basic/meta of the GGIR output, and the matrix to clarify when data was imputed for each long epoch time window and the reason for imputation. This function will generate a non-wear matrix at minute level, and it could be skipped if user chose to use the imputation data in the JIVE application as default.</p>
+</div>
+<div id="part-7" class="section level2">
+<h2>Part 7</h2>
+<p>In part 7, about 100 features were extracted from minute level activity data of three domains of sleep, physical activity, and circadian rhythmicity, which were based on outputs from GGIR v2.4.0 and calculated by R ActFrag and ActCR packages (Di et al., 2019). The standard deviation across days on each subject was also created for each feature. The weekday and weekend specific features were extracted as well since most features in the sleep and physical activity showed significant difference between weekdays and weekends. In brief, sleep domain referred to sleep duration, midpoint, efficiency, etc. Physical activity referred to daily motor activity such as sedentary behavior, light, and moderate-to-vigorous physical activity (MVPA). Circadian rhythms were natural rhythms that regulates the sleep-wake cycle within every 24 hours. For example, the cosinor curve and FPCA analysis were used in modeling of biological rhythms. A comprehensive list of all features could be found in the supplementary table and the detailed definition could be found in the GGIR manual and Di et al.’s publication in 2019.</p>
+</div>
+</div>
+<div id="running-postggir-and-inspecting-the-results" class="section level1">
+<h1>Running postGGIR and Inspecting the results</h1>
+<div id="input-and-output-of-part-0" class="section level2">
+<h2>Input and output of part 0</h2>
 <ul>
-<li>Command = call.afterggir(mode=0)</li>
+<li>Command = call.afterggir(mode=0)<br />
+</li>
 <li>Output folder = ./</li>
 </ul>
 <table>
@@ -470,23 +575,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <td>Extract other features from the GGIR output and merge all features together</td>
 </tr>
 <tr class="even">
-<td>part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd</td>
-<td>Combine all features into one single excel file. This is optional since it might be killed due to the issue of out of memory in a cluster.</td>
-</tr>
-<tr class="odd">
-<td>part7d_studyname_postGGIR_JIVE_4_outputReport.Rmd</td>
+<td>part7c_studyname_postGGIR_JIVE_3_runJIVE.Rmd</td>
 <td>Perform JIVE Decomposition for All Features using r.jive</td>
 </tr>
-<tr class="even">
-<td>part9_swarm.sh</td>
-<td>shell script to submit all jobs to the cluster</td>
+<tr class="odd">
+<td>part7d_studyname_postGGIR_JIVE_4_somefeatures_weekday.Rmd</td>
+<td>Extract some weekday/weekend specific features from the actigraphy data using R</td>
 </tr>
 </tbody>
 </table>
+<p>part9_swarm.sh | shell script to submit all jobs to the cluster</p>
 </div>
-<div id="output-of-part-1" class="section level2">
-<h2>Output of part 1</h2>
+<div id="input-and-output-of-part-1" class="section level2">
+<h2>Input and output of part 1</h2>
 <ul>
+<li>Main input files: csv files under /meta/csv folders of GGIR output</li>
 <li>Command = call.afterggir(mode=1)</li>
 <li>Output folder = ./data</li>
 </ul>
@@ -559,11 +662,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><em>f0 and f1 are the file index to start and finish with<br />
 </em>Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output</p>
 </div>
-<div id="output-of-part-2" class="section level2">
-<h2>Output of part 2</h2>
+<div id="input-and-output-of-part-2" class="section level2">
+<h2>Input and output of part 2</h2>
 <ul>
-<li>Command = call.afterggir(mode=1)</li>
-<li>Output folder = ./summary</li>
+<li><p>Main input files<br />
++ ./data/All_studyname_ENMO.data.csv<br />
++ GGIR results: part2, part4 and part5 (please specify <span class="math inline">\(part5FN\)</span> in the main function)<br />
++ GGIR raw data when bindir was specified</p></li>
+<li><p>Command = call.afterggir(mode=2)<br />
+</p></li>
+<li><p>Output folder = ./summary</p></li>
 </ul>
 <table>
 <colgroup>
@@ -596,10 +704,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 </div>
-<div id="output-of-part-3" class="section level2">
-<h2>Output of part 3</h2>
+<div id="input-and-output-of-part-3" class="section level2">
+<h2>Input and output of part 3</h2>
 <ul>
-<li>Command = call.afterggir(mode=1)</li>
+<li>Main input file: ./data/All_studyname_ENMO.data.csv<br />
+</li>
+<li>Command = call.afterggir(mode=3)</li>
 <li>Output folder = ./data</li>
 </ul>
 <table>
@@ -630,10 +740,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 <p>*Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output</p>
 </div>
-<div id="output-of-part-4" class="section level2">
-<h2>Output of part 4</h2>
+<div id="input-and-output-of-part-4" class="section level2">
+<h2>Input and output of part 4</h2>
 <ul>
-<li>Command = call.afterggir(mode=1)</li>
+<li>Main input file: ./data/flag_All_ studyname _ENMO.data.5s.csv</li>
+<li>Command = call.afterggir(mode=4)</li>
 <li>Output folder = ./data</li>
 </ul>
 <table>
@@ -655,290 +766,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 </div>
-<div id="output-of-part-5" class="section level2">
-<h2>Output of part 5</h2>
-<ul>
-<li>Command = part5_studyname_postGGIR.report.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="14%" />
-<col width="85%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part5_studyname_postGGIR.report.html</td>
-<td>A comprehensive report of data processing and explortatory plots.</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="output-of-part-6" class="section level2">
-<h2>Output of part 6</h2>
-<ul>
-<li>Command = part6_studyname_postGGIR.nonwear.report.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="12%" />
-<col width="12%" />
-<col width="74%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Folder</th>
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>./</td>
-<td>part6_studyname_postGGIR.nonwear.report.html</td>
-<td>A report of nonwear score.</td>
-</tr>
-<tr class="even">
-<td>./data</td>
-<td>JIVEraw_nonwearscore_studyname_f0_f1_Xs.csv</td>
-<td>Imputation data matrix of nonwearscore (1/0)</td>
-</tr>
-<tr class="odd">
-<td>./data</td>
-<td>JIVEimpu_nonwearscore_studyname_f0_f1_Xs.csv</td>
-<td>Data matrix of nonwearscore (1/0/NA)</td>
-</tr>
-</tbody>
-</table>
-<p><em>f0 and f1 are the file index to start and finish with<br />
-</em>Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output</p>
-</div>
-<div id="output-of-part-7a" class="section level2">
-<h2>Output of part 7a</h2>
-<ul>
-<li>Command = part7a_studyname_postGGIR_JIVE_1_somefeatures.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="14%" />
-<col width="85%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part7_studyname_all_features_dictionary.xlsx</td>
-<td>Description of features</td>
-</tr>
-<tr class="even">
-<td>part7a_studyname_postGGIR_JIVE_1_somefeatures.html</td>
-<td>Extract some features from the actigraphy data using R</td>
-</tr>
-<tr class="odd">
-<td>part7a_studyname_some_features_page1_features.csv</td>
-<td>List of some features</td>
-</tr>
-<tr class="even">
-<td>part7a_studyname_some_features_page2_face_day_PCs.csv</td>
-<td>Function PCA at the day level using fpca.face( )</td>
-</tr>
-<tr class="odd">
-<td>part7a_studyname_some_features_page3_face_subject_PCs.csv</td>
-<td>Function PCA at the subject level using fpca.face( )</td>
-</tr>
-<tr class="even">
-<td>part7a_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
-<td>Function PCA at the day level using denseFLMM( )</td>
-</tr>
-<tr class="odd">
-<td>part7a_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
-<td>Function PCA at the subject level using denseFLMM( )</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="output-of-part-7b" class="section level2">
-<h2>Output of part 7b</h2>
-<ul>
-<li>Command = part7b_studyname_postGGIR_JIVE_2_allfeatures.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="14%" />
-<col width="85%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part7b_studyname_postGGIR_JIVE_2_allfeatures.html</td>
-<td>Extract other features from the GGIR output and merge all features together</td>
-</tr>
-<tr class="even">
-<td>part7b_studyname_all_features_1.csv</td>
-<td>Raw data of all features</td>
-</tr>
-<tr class="odd">
-<td>part7b_studyname_all_features_2.csv</td>
-<td>Keep sample with valid ENMO inputs</td>
-</tr>
-<tr class="even">
-<td>part7b_studyname_all_features_2.csv.log</td>
-<td>Log file of each variable of part5b_studyname_all_features_2.csv</td>
-</tr>
-<tr class="odd">
-<td>plot_part7b_studyname_all_features_2.csv.pdf</td>
-<td>Plot of each variable of part5b_studyname_all_features_2.csv</td>
-</tr>
-<tr class="even">
-<td>part7b_studyname_all_features_3.csv</td>
-<td>Average variable at the subject level</td>
-</tr>
-<tr class="odd">
-<td>part7b_studyname_all_features_3.csv.log</td>
-<td>Log file of each variable of part5b_studyname_all_features_3.csv</td>
-</tr>
-<tr class="even">
-<td>plot_part7b_studyname_all_features_3.csv.pdf</td>
-<td>Plot of each variable of part5b_studyname_all_features_3.csv</td>
-</tr>
-<tr class="odd">
-<td>part7b_studyname_all_features_4.csv</td>
-<td>subject level SD of each feature</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="output-of-part-7c" class="section level2">
-<h2>Output of part 7c</h2>
-<ul>
-<li>Command = part7c_studyname_postGGIR_JIVE_3_excelReport.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="14%" />
-<col width="85%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part7c_studyname_postGGIR_JIVE_3_excelReport.html</td>
-<td>Combine all features into one single excel file. This is optional since it might be killed due to the issue of out of memory in a cluster.</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="output-of-part-7d" class="section level2">
-<h2>Output of part 7d</h2>
-<ul>
-<li>Command = part7d_studyname_postGGIR_JIVE_4_outputReport.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="14%" />
-<col width="85%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part7d_studyname_postGGIR_JIVE_4_outputReport.html</td>
-<td>Perform JIVE Decomposition for All Features using r.jive</td>
-</tr>
-<tr class="even">
-<td>part7d_studyname_jive_Decomposition.csv</td>
-<td>Joint and individual structure estimates</td>
-</tr>
-<tr class="odd">
-<td>part7d_studyname_jive_predScore.csv</td>
-<td>PCA scores of JIVE ( missing when jive.predict failes)</td>
-</tr>
-<tr class="even">
-<td>part7d_studyname_jive_predScore.csv</td>
-<td>PCA scores of JIVE ( missing when jive.predict failes)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="output-of-part-7e" class="section level2">
-<h2>Output of part 7e</h2>
-<ul>
-<li>Command = part7e_studyname_postGGIR_JIVE_5_somefeatures_weekday.Rmd</li>
-<li>Output folder = ./</li>
-</ul>
-<table>
-<colgroup>
-<col width="27%" />
-<col width="72%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Output</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>part7e_studyname_some_features_page1.csv</td>
-<td>Perform JIVE Decomposition for All Features using r.jive</td>
-</tr>
-<tr class="even">
-<td>part7e_weekday_studyname_all_features_3.csv</td>
-<td>subject level mean of each feature on weekday</td>
-</tr>
-<tr class="odd">
-<td>part7e_weekday_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
-<td>Function PCA at the day level using denseFLMM( ) on weekday</td>
-</tr>
-<tr class="even">
-<td>part7e_weekday_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
-<td>Function PCA at the subject level using denseFLMM( ) on weekday</td>
-</tr>
-<tr class="odd">
-<td>part7e_weekend_studyname_all_features_3.csv</td>
-<td>subject level mean of each feature on weekend</td>
-</tr>
-<tr class="even">
-<td>part7e_weekend_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
-<td>Function PCA at the day level using denseFLMM( ) on weekend</td>
-</tr>
-<tr class="odd">
-<td>part7e_weekend_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
-<td>Function PCA at the subject level using denseFLMM( ) on weekend</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="description-of-variables-in-the-output-data" class="section level2">
-<h2>Description of variables in the output data</h2>
+<div id="description-of-flag-variables-in-the-output-data" class="section level2">
+<h2>Description of flag variables in the output data</h2>
 <table>
 <colgroup>
 <col width="14%" />
@@ -1046,6 +875,292 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 </div>
+<div id="input-and-output-of-part-5" class="section level2">
+<h2>Input and output of part 5</h2>
+<ul>
+<li>Main input files
+<ul>
+<li>./summary/studyname_ggir_output_summary.xlsx</li>
+<li>./summary/part24daysummary.info.csv</li>
+<li>./data/plot.nonwearVSnvalidhours.csv</li>
+<li>./data/impu.flag_All_studyname_ENMO.data.flag.epochOuts.csv</li>
+</ul></li>
+<li>Command: run part5_studyname_postGGIR.report.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="85%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>part5_studyname_postGGIR.report.html</td>
+<td>A comprehensive report of data processing and explortatory plots.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="input-and-output-of-part-6" class="section level2">
+<h2>Input and output of part 6</h2>
+<ul>
+<li>Main input file: nonwearscore_studyname_01_xx_900s.csv</li>
+<li>Command = run part6_studyname_postGGIR.nonwear.report.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="12%" />
+<col width="12%" />
+<col width="74%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Folder</th>
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>./</td>
+<td>part6_studyname_postGGIR.nonwear.report.html</td>
+<td>A report of nonwear score.</td>
+</tr>
+<tr class="even">
+<td>./data</td>
+<td>JIVEraw_nonwearscore_studyname_f0_f1_Xs.csv</td>
+<td>Imputation data matrix of nonwearscore (1/0)</td>
+</tr>
+<tr class="odd">
+<td>./data</td>
+<td>JIVEimpu_nonwearscore_studyname_f0_f1_Xs.csv</td>
+<td>Data matrix of nonwearscore (1/0/NA)</td>
+</tr>
+</tbody>
+</table>
+<p><em>f0 and f1 are the file index to start and finish with<br />
+</em>Xs is the epoch size to which acceleration was averaged (seconds) in GGIR output</p>
+</div>
+<div id="input-and-output-of-part-7a" class="section level2">
+<h2>Input and output of part 7a</h2>
+<ul>
+<li>Main input
+<ul>
+<li>./data/impu.flag_All_studyname_ENMO.data.flag.epochOuts.csv</li>
+<li>GGIR: /results/QC/part4_nightsummary_sleep_full.csv</li>
+</ul></li>
+<li>Command = run part7a_studyname_postGGIR_JIVE_1_somefeatures.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="85%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>part7_studyname_all_features_dictionary.xlsx</td>
+<td>Description of features</td>
+</tr>
+<tr class="even">
+<td>part7a_studyname_postGGIR_JIVE_1_somefeatures.html</td>
+<td>Extract some features from the actigraphy data using R</td>
+</tr>
+<tr class="odd">
+<td>part7a_studyname_some_features_page1_features.csv</td>
+<td>List of some features</td>
+</tr>
+<tr class="even">
+<td>part7a_studyname_some_features_page2_face_day_PCs.csv</td>
+<td>Function PCA at the day level using fpca.face( )</td>
+</tr>
+<tr class="odd">
+<td>part7a_studyname_some_features_page3_face_subject_PCs.csv</td>
+<td>Function PCA at the subject level using fpca.face( )</td>
+</tr>
+<tr class="even">
+<td>part7a_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
+<td>Function PCA at the day level using denseFLMM( )</td>
+</tr>
+<tr class="odd">
+<td>part7a_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
+<td>Function PCA at the subject level using denseFLMM( )</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="input-and-output-of-part-7b" class="section level2">
+<h2>Input and output of part 7b</h2>
+<ul>
+<li>Main inputs
+<ul>
+<li>GGIR: part2_summary.csv</li>
+<li>GGIR: part2_daysummary.csv</li>
+<li>GGIR: part4_nightsummary_sleep_cleaned.csv</li>
+<li>GGIR: /results/QC/part4_nightsummary_sleep_full.csv</li>
+<li>GGIR: part5_daysummary_part5FN.csv<br />
+</li>
+<li>part7_studyname_all_features_dictionary.xlsx</li>
+</ul></li>
+<li>Command = run part7b_studyname_postGGIR_JIVE_2_allfeatures.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="85%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>part7b_studyname_postGGIR_JIVE_2_allfeatures.html</td>
+<td>Extract other features from the GGIR output and merge all features together</td>
+</tr>
+<tr class="even">
+<td>part7b_studyname_all_features_1.csv</td>
+<td>Raw data of all features</td>
+</tr>
+<tr class="odd">
+<td>part7b_studyname_all_features_2.csv</td>
+<td>Keep sample with valid ENMO inputs</td>
+</tr>
+<tr class="even">
+<td>part7b_studyname_all_features_2.csv.log</td>
+<td>Log file of each variable of part5b_studyname_all_features_2.csv</td>
+</tr>
+<tr class="odd">
+<td>plot_part7b_studyname_all_features_2.csv.pdf</td>
+<td>Plot of each variable of part5b_studyname_all_features_2.csv</td>
+</tr>
+<tr class="even">
+<td>part7b_studyname_all_features_3.csv</td>
+<td>Average variable at the subject level</td>
+</tr>
+<tr class="odd">
+<td>part7b_studyname_all_features_3.csv.log</td>
+<td>Log file of each variable of part5b_studyname_all_features_3.csv</td>
+</tr>
+<tr class="even">
+<td>plot_part7b_studyname_all_features_3.csv.pdf</td>
+<td>Plot of each variable of part5b_studyname_all_features_3.csv</td>
+</tr>
+<tr class="odd">
+<td>part7b_studyname_all_features_4.csv</td>
+<td>subject level SD of each feature</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="input-and-output-of-part-7c" class="section level2">
+<h2>Input and output of part 7c</h2>
+<ul>
+<li>Main inputs
+<ul>
+<li>part7b_studyname_all_features_3_subject.csv</li>
+<li>part7b_studyname_all_features_4_subjectSD.csv</li>
+</ul></li>
+<li>Command = run part7c_studyname_postGGIR_JIVE_3_runJIVE.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="85%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>part7c_studyname_postGGIR_JIVE_4_outputReport.html</td>
+<td>Perform JIVE Decomposition for All Features using r.jive</td>
+</tr>
+<tr class="even">
+<td>part7c_studyname_jive_Decomposition.csv</td>
+<td>Joint and individual structure estimates</td>
+</tr>
+<tr class="odd">
+<td>part7c_studyname_jive_predScore.csv</td>
+<td>PCA scores of JIVE ( missing when jive.predict failes)</td>
+</tr>
+<tr class="even">
+<td>part7c_studyname_jive_predScore.csv</td>
+<td>PCA scores of JIVE ( missing when jive.predict failes)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="input-and-output-of-part-7d" class="section level2">
+<h2>Input and output of part 7d</h2>
+<ul>
+<li>Main input: ./data/impu.flag_All_studyname_ENMO.data.flag.epochOuts.csv</li>
+<li>Command = run part7d_studyname_postGGIR_JIVE_5_somefeatures_weekday.Rmd</li>
+<li>Output folder = ./</li>
+</ul>
+<table>
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>part7d_studyname_some_features_page1.csv</td>
+<td>Perform JIVE Decomposition for All Features using r.jive</td>
+</tr>
+<tr class="even">
+<td>part7d_weekday_studyname_all_features_3.csv</td>
+<td>subject level mean of each feature on weekday</td>
+</tr>
+<tr class="odd">
+<td>part7d_weekday_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
+<td>Function PCA at the day level using denseFLMM( ) on weekday</td>
+</tr>
+<tr class="even">
+<td>part7d_weekday_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
+<td>Function PCA at the subject level using denseFLMM( ) on weekday</td>
+</tr>
+<tr class="odd">
+<td>part7d_weekend_studyname_all_features_3.csv</td>
+<td>subject level mean of each feature on weekend</td>
+</tr>
+<tr class="even">
+<td>part7d_weekend_studyname_some_features_page4_denseFLMM_day_PCs.csv</td>
+<td>Function PCA at the day level using denseFLMM( ) on weekend</td>
+</tr>
+<tr class="odd">
+<td>part7d_weekend_studyname_some_features_page5_denseFLMM_subject_PCs.csv</td>
+<td>Function PCA at the subject level using denseFLMM( ) on weekend</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="description-of-features-of-domains-of-physical-activity-sleep-and-circadian-rhythmicity" class="section level2">
 <h2>Description of features of domains of physical activity, sleep and circadian rhythmicity</h2>
 <p><strong>Sleep Domain</strong></p>
@@ -1098,7 +1213,7 @@ Total sleep duration, which equals the accumulated nocturnal sustained inactivit
 sleep_Midpoint
 </td>
 <td style="text-align:left;">
-Sleep Midpoint
+Sleep Midpoint = (sleeponset + wakeup)/2.
 </td>
 </tr>
 <tr>
@@ -1106,7 +1221,7 @@ Sleep Midpoint
 sleep_efficiency
 </td>
 <td style="text-align:left;">
-Sleep Efficiency
+Sleep Efficiency = SleepDurationInSpt / (wakeup - sleeponset), which was the fraction of time spent asleep in the Sleep Period Time window.
 </td>
 </tr>
 <tr>
@@ -1153,7 +1268,7 @@ Description
 TAC
 </td>
 <td style="text-align:left;">
-Total volume of physical activity
+Total volume of physical activity in the daytime
 </td>
 </tr>
 <tr>
@@ -1161,12 +1276,28 @@ Total volume of physical activity
 TLAC
 </td>
 <td style="text-align:left;">
-Total volume of log-transformed physical activity
+Total volume of log-transformed physical activity in the daytime
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-sed_time
+TAC_24h
+</td>
+<td style="text-align:left;">
+Total volume of physical activity within 24 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TLAC_24h
+</td>
+<td style="text-align:left;">
+Total volume of log-transformed physical activity within 24 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sed_dur
 </td>
 <td style="text-align:left;">
 Total daytime duration in minutes of sedentary activity
@@ -1174,7 +1305,7 @@ Total daytime duration in minutes of sedentary activity
 </tr>
 <tr>
 <td style="text-align:left;">
-light_time
+light_dur
 </td>
 <td style="text-align:left;">
 Total daytime duration in minutes of light activity
@@ -1182,7 +1313,7 @@ Total daytime duration in minutes of light activity
 </tr>
 <tr>
 <td style="text-align:left;">
-mod_time
+mod_dur
 </td>
 <td style="text-align:left;">
 Total daytime duration in minutes of moderate activity
@@ -1190,7 +1321,7 @@ Total daytime duration in minutes of moderate activity
 </tr>
 <tr>
 <td style="text-align:left;">
-vig_time
+vig_dur
 </td>
 <td style="text-align:left;">
 Total daytime duration in minutes of vigorous activity
@@ -1198,7 +1329,7 @@ Total daytime duration in minutes of vigorous activity
 </tr>
 <tr>
 <td style="text-align:left;">
-MVPA_time
+MVPA_dur
 </td>
 <td style="text-align:left;">
 Total daytime duration in minutes of moderate to vigorous activity
@@ -1206,15 +1337,7 @@ Total daytime duration in minutes of moderate to vigorous activity
 </tr>
 <tr>
 <td style="text-align:left;">
-activity_time
-</td>
-<td style="text-align:left;">
-Total daytime duration in minutes of light/moderate/vigorous activity
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sed_time_M10
+sed_dur_M10
 </td>
 <td style="text-align:left;">
 Total duration in minutes of sedentary activity within M10 window
@@ -1222,7 +1345,7 @@ Total duration in minutes of sedentary activity within M10 window
 </tr>
 <tr>
 <td style="text-align:left;">
-light_time_M10
+light_dur_M10
 </td>
 <td style="text-align:left;">
 Total duration in minutes of light activity within M10 window
@@ -1230,7 +1353,7 @@ Total duration in minutes of light activity within M10 window
 </tr>
 <tr>
 <td style="text-align:left;">
-mod_time_M10
+mod_dur_M10
 </td>
 <td style="text-align:left;">
 Total duration in minutes of moderate activity within M10 window
@@ -1238,7 +1361,7 @@ Total duration in minutes of moderate activity within M10 window
 </tr>
 <tr>
 <td style="text-align:left;">
-vig_time_M10
+vig_dur_M10
 </td>
 <td style="text-align:left;">
 Total duration in minutes of vigorous activity within M10 window
@@ -1246,7 +1369,7 @@ Total duration in minutes of vigorous activity within M10 window
 </tr>
 <tr>
 <td style="text-align:left;">
-MVPA_time_M10
+MVPA_dur_M10
 </td>
 <td style="text-align:left;">
 Total duration in minutes of moderate to vigorous activity within M10 window
@@ -1254,15 +1377,7 @@ Total duration in minutes of moderate to vigorous activity within M10 window
 </tr>
 <tr>
 <td style="text-align:left;">
-activity_time_M10
-</td>
-<td style="text-align:left;">
-Total duration in minutes of light/moderate/vigorous activity within M10 window
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-sed_time_24h
+sed_dur_24h
 </td>
 <td style="text-align:left;">
 Total duration in minutes of sedentary activity within 24 hours
@@ -1270,7 +1385,7 @@ Total duration in minutes of sedentary activity within 24 hours
 </tr>
 <tr>
 <td style="text-align:left;">
-light_time_24h
+light_dur_24h
 </td>
 <td style="text-align:left;">
 Total duration in minutes of light activity within 24 hours
@@ -1278,7 +1393,7 @@ Total duration in minutes of light activity within 24 hours
 </tr>
 <tr>
 <td style="text-align:left;">
-mod_time_24h
+mod_dur_24h
 </td>
 <td style="text-align:left;">
 Total duration in minutes of moderate activity within 24 hours
@@ -1286,7 +1401,7 @@ Total duration in minutes of moderate activity within 24 hours
 </tr>
 <tr>
 <td style="text-align:left;">
-vig_time_24h
+vig_dur_24h
 </td>
 <td style="text-align:left;">
 Total duration in minutes of vigorous activity within 24 hours
@@ -1294,7 +1409,7 @@ Total duration in minutes of vigorous activity within 24 hours
 </tr>
 <tr>
 <td style="text-align:left;">
-MVPA_time_24h
+MVPA_dur_24h
 </td>
 <td style="text-align:left;">
 Total duration in minutes of moderate to vigorous activity within 24 hours
@@ -1302,18 +1417,10 @@ Total duration in minutes of moderate to vigorous activity within 24 hours
 </tr>
 <tr>
 <td style="text-align:left;">
-activity_time_24h
-</td>
-<td style="text-align:left;">
-Total duration in minutes of light/moderate/vigorous activity within 24 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 mean_r
 </td>
 <td style="text-align:left;">
-average bout duration (resting)
+Mean sedentary bout duration.
 </td>
 </tr>
 <tr>
@@ -1321,7 +1428,7 @@ average bout duration (resting)
 mean_a
 </td>
 <td style="text-align:left;">
-average bout duration (active)
+Mean active bout duration.
 </td>
 </tr>
 <tr>
@@ -1329,7 +1436,7 @@ average bout duration (active)
 SATP
 </td>
 <td style="text-align:left;">
-sedentary-to-active transition probabilities
+Sedentary to active transition probabilities.
 </td>
 </tr>
 <tr>
@@ -1337,7 +1444,7 @@ sedentary-to-active transition probabilities
 ASTP
 </td>
 <td style="text-align:left;">
-active-to-sedentary transition probabilities
+Active to sedentary transition probabilities.
 </td>
 </tr>
 <tr>
@@ -1345,7 +1452,7 @@ active-to-sedentary transition probabilities
 Gini_r
 </td>
 <td style="text-align:left;">
-Gini index, absolute variability normalized to the average bout duration (resting)
+Gini index for active bout, absolute variability normalized to the average bout duration (resting).
 </td>
 </tr>
 <tr>
@@ -1353,7 +1460,7 @@ Gini index, absolute variability normalized to the average bout duration (restin
 Gini_a
 </td>
 <td style="text-align:left;">
-Gini index, absolute variability normalized to the average bout duration (active)
+Gini index for sedentary bout, absolute variability normalized to the average bout duration (active).
 </td>
 </tr>
 <tr>
@@ -1361,7 +1468,7 @@ Gini index, absolute variability normalized to the average bout duration (active
 alpha_r
 </td>
 <td style="text-align:left;">
-power-law distribution parameter (resting)
+Power law parameter for sedentary bout.
 </td>
 </tr>
 <tr>
@@ -1369,7 +1476,7 @@ power-law distribution parameter (resting)
 alpha_a
 </td>
 <td style="text-align:left;">
-power-law distribution parameter (active)
+Power law parameter for active bout.
 </td>
 </tr>
 <tr>
@@ -1377,7 +1484,7 @@ power-law distribution parameter (active)
 h_r
 </td>
 <td style="text-align:left;">
-average hazard (resting)
+Hazard function for sedentary bout.
 </td>
 </tr>
 <tr>
@@ -1385,7 +1492,7 @@ average hazard (resting)
 h_a
 </td>
 <td style="text-align:left;">
-average hazard (active)
+Hazard function for active bout.
 </td>
 </tr>
 <tr>
@@ -1565,10 +1672,74 @@ Description
 <tbody>
 <tr>
 <td style="text-align:left;">
+L5TIME_num
+</td>
+<td style="text-align:left;">
+Timing of least active 5 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M10TIME_num
+</td>
+<td style="text-align:left;">
+Timing of most active 10 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+L5VALUE
+</td>
+<td style="text-align:left;">
+Average acceleration value (mg) of least active 5 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M10VALUE
+</td>
+<td style="text-align:left;">
+Average acceleration value (mg) of most active 10 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 RA_ggir
 </td>
 <td style="text-align:left;">
-Relative amplitude: (M10VALUE-L5VALUE)/(M10VALUE+L5VALUE) where M10VALUE= most active 10 hrs, L5VALUE = least active 5 hour from GGIR output.
+Relative amplitude reflects the difference between M10 activity and L5 activity and RA_ggir = (M10VALUE-L5VALUE)/(M10VALUE+L5VALUE).
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+L5
+</td>
+<td style="text-align:left;">
+Average acceleration value (mg) of least active 5 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M10
+</td>
+<td style="text-align:left;">
+Average acceleration value (mg) of most active 10 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+L5TIME
+</td>
+<td style="text-align:left;">
+Timing of least active 5 hours
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+M10TIME
+</td>
+<td style="text-align:left;">
+Timing of most active 10 hours
 </td>
 </tr>
 <tr>
@@ -1581,90 +1752,10 @@ Relative amplitude: (M10-L5)/(M10+L5) where M10= most active 10 hrs, L5 = least 
 </tr>
 <tr>
 <td style="text-align:left;">
-L5TIME_num
-</td>
-<td style="text-align:left;">
-Time of the lowest acceleration value of the lowest acceleration 5 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-M10TIME_num
-</td>
-<td style="text-align:left;">
-Time of the highest acceleration value of the highest acceleration 10 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-L5VALUE
-</td>
-<td style="text-align:left;">
-Average acceleration value (mg) of the lowest Average acceleration 5 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-M10VALUE
-</td>
-<td style="text-align:left;">
-Average acceleration value (mg) of the lowest Average acceleration value in highest Average acceleration 10 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-M10
-</td>
-<td style="text-align:left;">
-Average acceleration value (mg) of the lowest Average acceleration value in highest Average acceleration 10 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-L5
-</td>
-<td style="text-align:left;">
-Average acceleration value (mg) of the lowest Average acceleration 5 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-L5TIME
-</td>
-<td style="text-align:left;">
-Time of the lowest acceleration value of the lowest acceleration 5 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-M10TIME
-</td>
-<td style="text-align:left;">
-Time of the highest acceleration value of the highest acceleration 10 hours
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IV_intradailyvariability
-</td>
-<td style="text-align:left;">
-Intra-daily variability measures fragmentation in the rest/activity rhythms
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-IS_interdailystability
-</td>
-<td style="text-align:left;">
-Inter-daily stability measures fragmentation in the rest/activity rhythms
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
 IV
 </td>
 <td style="text-align:left;">
-Intra-daily variability measures fragmentation in the rest/activity rhythms
+Intra-daily variability measures fragmentation in the rest/activity rhythms.
 </td>
 </tr>
 <tr>
@@ -1672,7 +1763,23 @@ Intra-daily variability measures fragmentation in the rest/activity rhythms
 IS
 </td>
 <td style="text-align:left;">
-Inter-daily stability measures fragmentation in the rest/activity rhythms
+Inter-daily stability measures fragmentation in the rest/activity rhythms between different days.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IV_intradailyvariability
+</td>
+<td style="text-align:left;">
+Intra-daily variability measures fragmentation in the rest/activity rhythms.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IS_interdailystability
+</td>
+<td style="text-align:left;">
+Inter-daily stability measures fragmentation in the rest/activity rhythms between different days.
 </td>
 </tr>
 <tr>
@@ -1680,7 +1787,7 @@ Inter-daily stability measures fragmentation in the rest/activity rhythms
 mesor
 </td>
 <td style="text-align:left;">
-mesor (a rhythm-adjusted mean)
+MESOR which is short for midline statistics of rhythm, which is a rhythm adjusted mean. This represents mean activity level.
 </td>
 </tr>
 <tr>
@@ -1688,7 +1795,7 @@ mesor (a rhythm-adjusted mean)
 amp
 </td>
 <td style="text-align:left;">
-amplitude (a measure of variability around the mean)
+Amplitude, a measure of half the extend of predictable variation within a cycle. This represents the highest activity one can achieve.
 </td>
 </tr>
 <tr>
@@ -1696,7 +1803,7 @@ amplitude (a measure of variability around the mean)
 acro
 </td>
 <td style="text-align:left;">
-acrophase (the timing of the peak activity)
+Acrophase, a measure of the time of the overall high values recurring in each cycle. Here it has a unit of radian. This represents time to reach the peak.
 </td>
 </tr>
 <tr>
@@ -1704,7 +1811,7 @@ acrophase (the timing of the peak activity)
 mesor_L
 </td>
 <td style="text-align:left;">
-mesor log-transformed
+Mesor in the cosinor model by using log-transformed data.
 </td>
 </tr>
 <tr>
@@ -1712,7 +1819,7 @@ mesor log-transformed
 amp_L
 </td>
 <td style="text-align:left;">
-amplitude log-transformed
+Amplitude log-transformed in the cosinor model by using log-transformed data.
 </td>
 </tr>
 <tr>
@@ -1720,7 +1827,7 @@ amplitude log-transformed
 acro_L
 </td>
 <td style="text-align:left;">
-acrophase log-transformed
+Acrophase log-transformed in the cosinor model by using log-transformed data.
 </td>
 </tr>
 <tr>
@@ -1728,7 +1835,7 @@ acrophase log-transformed
 PC1
 </td>
 <td style="text-align:left;">
-1st principal component score from fPCA
+1st principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1736,7 +1843,7 @@ PC1
 PC2
 </td>
 <td style="text-align:left;">
-2nd principal component score from fPCA
+2nd principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1744,7 +1851,7 @@ PC2
 PC3
 </td>
 <td style="text-align:left;">
-3rd principal component score from fPCA
+3rd principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1752,7 +1859,7 @@ PC3
 PC4
 </td>
 <td style="text-align:left;">
-4th principal component score from fPCA
+4th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1760,7 +1867,7 @@ PC4
 PC5
 </td>
 <td style="text-align:left;">
-5th principal component score from fPCA
+5th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1768,7 +1875,7 @@ PC5
 PC6
 </td>
 <td style="text-align:left;">
-6th principal component score from fPCA
+6th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1776,7 +1883,7 @@ PC6
 PC7
 </td>
 <td style="text-align:left;">
-7th principal component score from fPCA
+7th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1784,7 +1891,7 @@ PC7
 PC8
 </td>
 <td style="text-align:left;">
-8th principal component score from fPCA
+8th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1792,7 +1899,7 @@ PC8
 PC9
 </td>
 <td style="text-align:left;">
-9th principal component score from fPCA
+9th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 <tr>
@@ -1800,16 +1907,21 @@ PC9
 PC10
 </td>
 <td style="text-align:left;">
-10th principal component score from fPCA
+10th principal component score from functional principal component analysis (FPCA).
 </td>
 </tr>
 </tbody>
 </table>
-<p>Reference:</p>
-<ul>
-<li></li>
-</ul>
 </div>
+</div>
+<div id="section" class="section level1">
+<h1></h1>
+</div>
+<div id="reference" class="section level1">
+<h1>Reference</h1>
+<ul>
+<li>Wei Guo, Vadim Zipunnikov, Andrew Leroux, PhD, Kathleen R Merikangas (2021) postGGIR: An Open-Source R/R-Markdown Package for Accelerometer Data Processing after Running GGIR. (Manuscript)</li>
+</ul>
 </div>
 
 

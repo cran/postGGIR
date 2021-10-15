@@ -19,18 +19,16 @@ knitr::opts_chunk$set(
 #  print(paste("length=",length(argv),sep=""))
 #  mode<-as.numeric(argv[1])
 #  print(c("mode =", mode))
+#  # (Note) Please remove the above lines if you are running this within R console
+#  #        instead of submitting jobs to a cluster.
 #  
 #  #########################################################################
-#  # (user-define 1) you got to redefine this according different study!!!!
+#  # (user-define 1) you need to redefine this according different study!!!!
 #  #########################################################################
-#  # colaus
-#  filename2id.1<-function(x) {
-#    y1<-unlist(strsplit(x,"\\_"))[1]
-#    y2<-unlist(strsplit(y1,"\\."))[1]
-#    return(y2)
-#  }
+#  # example 1
+#  filename2id.1<-function(x)  unlist(strsplit(y1,"\\."))[1]
 #  
-#  # nimh (use csv file =c("filename","ggirID"))
+#  #  example 2 (use csv file =c("filename","ggirID"))
 #  filename2id.2<-function(x) {
 #    d<-read.csv("./postGGIR/inst/example/filename2id.csv",head=1,stringsAsFactors=F)
 #    y1<-which(d[,"filename"]==x)
@@ -44,17 +42,22 @@ knitr::opts_chunk$set(
 #  #  main call
 #  #########################################################################
 #  
-#  call.afterggir<-function(mode,rmDup=FALSE,filename2id=filename2id.1){
+#  call.afterggir<-function(mode,filename2id=filename2id.1){
 #  
 #  library(postGGIR)
-#  #################################################
+#  #########################################################################
 #  # (user-define 2) Fill in parameters of your ggir output
-#  #################################################
+#  ##########################################################################
+#  
 #  currentdir =
 #  studyname =
 #  bindir =
 #  outputdir =
+#  setwd(currentdir)
 #  
+#  rmDup=FALSE   # keep all subjects in postGGIR
+#  PA.threshold=c(50,100,400)
+#  part5FN="WW_L50M125V500_T5A5"
 #  epochIn = 5
 #  epochOut = 5
 #  flag.epochOut = 60
@@ -63,7 +66,12 @@ knitr::opts_chunk$set(
 #  QCdays.alpha = 7
 #  QChours.alpha = 16
 #  useIDs.FN<-NULL
-#  setwd(currentdir)
+#  Rversion="R"
+#  desiredtz="US/Eastern"
+#  RemoveDaySleeper=FALSE
+#  part5FN=part5FN,
+#  NfileEachBundle=20
+#  trace=FALSE
 #  #########################################################################
 #  #   remove duplicate sample IDs for plotting and feature extraction
 #  #########################################################################
@@ -75,9 +83,9 @@ knitr::opts_chunk$set(
 #  inFN<-paste(studyname,"_samples_remove_temp.csv",sep="")
 #  useIDs.FN<-paste(sumdir,"/",studyname,"_samples_remove.csv",sep="")
 #  
-#  #################################################
+#  #########################################################################
 #  # (user-define 3 as rmDup=TRUE)  create useIDs.FN file
-#  #################################################
+#  #########################################################################
 #  # step 2: create the ./summary/*remove.csv file manually or by R commands
 #  d<-read.csv(inFN,head=1,stringsAsFactors=F)
 #  d<-d[order(d[,"Date"]),]
@@ -86,26 +94,51 @@ knitr::opts_chunk$set(
 #  S<-duplicated(d[,"newID"],fromLast=keep.last) #keep the last copy for nccr
 #  d[S,"duplicate"]<-"remove"
 #  write.csv(d,file=useIDs.FN,row.names=F)
+#  
 #  }
+#  
 #  #########################################################################
-#  #  maincall
+#  #   call afterggir
 #  #########################################################################
+#  
 #  setwd(currentdir)
-#  afterggir(mode=mode,useIDs.FN,currentdir,studyname,bindir,
-#  outputdir,epochIn,epochOut,flag.epochOut,log.multiplier,use.cluster,QCdays.alpha=QCdays.alpha,QChours.alpha=QChours.alpha,Rversion="R/3.6.3",filename2id=filename2id)
+#  afterggir(mode=mode,
+#            useIDs.FN=useIDs.FN,
+#            currentdir=currentdir,
+#            studyname=studyname,
+#            bindir=bindir,
+#            outputdir=outputdir,
+#            epochIn=epochIn,
+#            epochOut=epochOut,
+#            flag.epochOut=flag.epochOut,
+#            log.multiplier=log.multiplier,
+#            use.cluster=use.cluster,
+#            QCdays.alpha=QCdays.alpha,
+#            QChours.alpha=QChours.alpha,
+#            QCnights.feature.alpha=QCnights.feature.alpha,
+#            Rversion=Rversion,
+#            filename2id=filename2id,
+#            PA.threshold=PA.threshold,
+#            desiredtz=desiredtz,
+#            RemoveDaySleeper=RemoveDaySleeper,
+#            part5FN=part5FN,
+#            NfileEachBundle=NfileEachBundle,
+#            trace=trace)
+#  
 #  }
-#  ##############################################
-#  call.afterggir(mode)
-#  ##############################################
-#  #   Note:   call.afterggir(mode=0)
-#  #        mode =0 : creat sw/Rmd file
-#  #        mode =1 : data transform using cluster or not
-#  #        mode =2 : summary
-#  #        mode =3 : clean
-#  #        mode =4 : impu
+#  #########################################################################
+#            call.afterggir(mode)
+#  #########################################################################
+#  
+#  #   Note:   call.afterggir(mode)
+#  #        mode = 0 : creat sw/Rmd file
+#  #        mode = 1 : data transform using cluster or not
+#  #        mode = 2 : summary
+#  #        mode = 3 : clean
+#  #        mode = 4 : impu
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  call.afterggir(mode,rmDup=FALSE)
+#  call.afterggir(mode,filename2id)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  #!/bin/bash
@@ -136,8 +169,7 @@ library(knitr)
 library(kableExtra)  
 
 
-feaFN<-system.file("template", "features.dictionary.xlsx", package = "postGGIR")  
-#feaFN<- "features.dictionary.xlsx"   
+feaFN<-system.file("template", "features.dictionary.xlsx", package = "postGGIR")   
   
 dict<-read.xlsx(feaFN,head=1,sheetName="dictionary",stringsAsFactors=F)
 dict.SL<-dict[which(dict[,"Domain"]=="SL"),c("Variable","Description")]
@@ -160,19 +192,8 @@ kable(dict.CR) %>%
     kable_styling(bootstrap_options = c("striped", "hover"))
 
 ## ----eval=FALSE,include=FALSE-------------------------------------------------
-#  library(xlsx)
-#  library(dplyr)
-#  library(kableExtra)
-#  library(knitr)
-#  
 #  d1<-read.xlsx("postGGIR.output.description.xlsx",sheetName="output.format")
-#  d2<-read.xlsx("postGGIR.output.description.xlsx",sheetName="output.variable")
-#  d3<-read.xlsx("postGGIR.output.description.xlsx",sheetName="features")
-#  
 #  
 #  cd /data/guow4/project0/GGIR/postGGIR/postGGIR_compile/v2/postGGIR/vignettes
 #  R -e "rmarkdown::render('postGGIR.Rmd'   )"
-#  
-#  
-#  
 

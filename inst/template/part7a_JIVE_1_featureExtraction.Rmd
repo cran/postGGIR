@@ -1,5 +1,5 @@
 ---
-title: 'Extracts Features of Domains of Physical Activity, Sleep and Circadian Rhythmicity '
+title: 'postGGIR part 7a: Extracts Features of Domains of Physical Activity, Sleep and Circadian Rhythmicity '
 author: "Wei Guo"
 date_xxx
 output:
@@ -46,7 +46,7 @@ setwd(currentdir)
 #  PA.threshold = c(50,100,400,Inf)     #   part5FN="WW_L50M100V400_T5A5" 
 
 enmoFN<-paste("./data/impu.flag_All_",studyname,"_ENMO.data.", epochOut,"s.csv",sep="")  
-foutFN<-function(x,studyname) paste("part7a_",studyname,"_some_features_page",x,".csv",sep="") 
+foutFN<-function(x,studyname) paste("part7a_",studyname,"_some_features_page",x,".csv",sep="")  
 outenmoFN<-paste("./data/clean.impu.flag_All_",studyname,"_ENMO.data.",epochOut,"s.csv",sep="")  
 outsleepFN<-paste("./data/clean.impu.flag_All_",studyname,"_ENMO.data.",epochOut,"s.sleepmatrix.csv",sep="")  
 M10windowFN<-paste("./data/clean.impu.flag_All_",studyname,"_ENMO.data.",epochOut,"s.M10windowMatrix.csv",sep="")  
@@ -82,8 +82,13 @@ setwd(currentdir)
  
 D1<-read.csv(enmoFN,head=1,nrow=-1,stringsAsFactors=F)
 Ctop<-which(colnames(D1)=="X00.00.00")-1
-table(D1[,c("KEEP","remove16h7day")])
-if (nrow(D1)>nrow(unique(D1[,1:2])) ) stop("Found duplicate days in ENMO data")
+table(D1[,c("KEEP","remove16h7day")]) 
+if (nrow(D1)>nrow(unique(D1[,1:2])) ) {temp<-paste(D1[,1],D1[,2],sep=" ")  
+                                       s<-which(duplicated(temp))
+                                       print(unique(D1[s,1]))
+                                       print(temp[s]) 
+                                       stop("Found duplicate days in ENMO data")} 
+
 
 D2<-D1[which(D1[,"KEEP"]=="keep" &!is.na(D1[,"newID"])),]
 
@@ -314,9 +319,18 @@ Total volumen of physical activity serves as a proxy for the total amount of acc
 
 
 ```{r chunk21} 
-tac = Tvol2(count.data = count, weartime = wear,logtransform = FALSE) #count=1000ENMO
-tlac = Tvol2(count.data = log.count,weartime = wear,logtransform = FALSE) #ID,Day,TAC
+tac24 = Tvol2(count.data = count, weartime = wear,logtransform = FALSE)  
+tlac24 = Tvol2(count.data = log.count,weartime = wear,logtransform = FALSE)  
+colnames(tac24)[3]<-"TAC_24h"
+colnames(tlac24)[3]<-"TLAC_24h"
+
+tac = Tvol2(count.data = count, weartime = nonsleepMatrix,logtransform = FALSE) #count=1000ENMO
+tlac = Tvol2(count.data = log.count,weartime = nonsleepMatrix,logtransform = FALSE) #ID,Day,TAC
 colnames(tlac)[3]<-"TLAC"
+
+temp1<-merge(tac24,tlac24,by=c("ID","Day"),all=TRUE) 
+temp2<-merge(tac,tlac,by=c("ID","Day"),all=TRUE) 
+tac4features<-merge(temp2,temp1,by=c("ID","Day"),all=TRUE)   
 ```
 
   * `r paste("dim(tac) = ",dim(tac)[1],"X",dim(tac)[2],sep="")`     
@@ -528,7 +542,7 @@ dim(ra_all)
 dim(frag_by_subject)
 dim(frag_by_day)
 
-output<-merge(tac,tlac,by=c("ID","Day"),all=TRUE) 
+output<-tac4features 
 output<-merge(output,sed_all,by=c("ID","Day"),all=TRUE) 
 output<-merge(output,frag_by_day,by=c("ID","Day"),all=TRUE) 
 output<-merge(output,iv_all,by=c("ID","Day"),all=TRUE) 
@@ -589,6 +603,7 @@ fit.fpca <- fpca.face(X, knots = 35)
 Phi <- fit.fpca$efunctions
 eigenvalues <- fit.fpca$evalues
 scores <- fit.fpca$scores
+colnames(scores)<-paste("PC",1:ncol(scores),sep="")
 
 perc.var <- 100*round(eigenvalues/sum(eigenvalues), digits = 3)
 sum(perc.var) 
@@ -605,6 +620,7 @@ perc.var2 <- 100*round(eigenvalues2/sum(eigenvalues2), digits = 3)
 sum(perc.var2) 
 sum(perc.var2[1:4])  
 } else scores2<-array(NA,dim=c(nrow(idM.avg),10))
+colnames(scores2)<-paste("PC",1:ncol(scores2),sep="") 
 face_subject_PCs<-cbind(idM.avg,scores2)
  
 
@@ -664,8 +680,8 @@ n1440*Z2$sigma2/Z2$totvar
 Z2$totvar
 subject_PCs<-cbind(idM.avg2,Z2$xi[[1]]  ) 
 day_PCs<-cbind(idM,Z2$xi[[2]]  )
-
-
+colnames(subject_PCs)[(ncol(idM.avg2)+1): ncol(subject_PCs)]<-paste("PC",1:ncol(Z2$xi[[1]]),sep="")
+colnames(day_PCs)[(ncol(idM)+1): ncol(day_PCs)]<-paste("PC",1:ncol(Z2$xi[[2]]),sep="")
 
 write.csv(day_PCs, file=foutFN("4_denseFLMM_day_PCs", studyname),  col.names = TRUE, row.names = FALSE )
 write.csv(subject_PCs, file=foutFN("5_denseFLMM_subject_PCs",studyname), col.names = TRUE, row.names = FALSE )

@@ -255,13 +255,14 @@ for (i in 1:length(idlist)){
 }#end i
  
 if (trace) print(head(ansM))
+ansM<-data.frame(ansM)
 colnames(ansM)<-c("i",sortByid,"Ndays","NmissDays","NcompleteDays") 
 # write.csv(ansM,file=outFN[3],row.names=F)    
 if (trace) print(dim(d))
 if (trace) print(length(unique(d[,sortByid])) )
 if (trace) print(tail(unique(d[,sortByid])))
 
-write.xlsx(ansM, file=BDfn, sheetName = "5_NvalidDays",   col.names = TRUE, row.names = FALSE,append=TRUE)
+write.xlsx(ansM, file=BDfn, sheetName = "5_NvalidDays",   col.names = TRUE, row.names = FALSE,append=TRUE) 
 BD<-merge(BD,ansM[,-1],by="filename",all=TRUE,sort=FALSE)
 
 if (trace) print("end this part")
@@ -469,11 +470,11 @@ fmissing<-d[which(d[,"missing"]=="M"),]
 fid<-unique(d[,c(sortByid,"Ndays")])
 
  
-hist(d[,"N.valid.hours"],main="N_valid hours for all")
-hist(d[which(d[,"missing"]=="C"),"N.valid.hours"],main="N_valid hours for Complete days")
-hist(d[which(d[,"missing"]=="M"),"N.valid.hours"],main="N_valid hours for missing days") 
-plot(d[which(d[,"missing"]=="C"),"N.valid.hours"],main="N_valid hours for Complete days")
-plot(d[which(d[,"missing"]=="M"),"N.valid.hours"],main="N_valid hours for missing days") 
+hist(d[,"N.valid.hours"],main="N valid hours for all",xlab="Hour")
+hist(d[which(d[,"missing"]=="C"),"N.valid.hours"],main="N valid hours for Complete days",xlab="Hour") 
+hist(d[which(d[,"missing"]=="M"),"N.valid.hours"],main="N valid hours for missing days",xlab="Hour") 
+plot(d[which(d[,"missing"]=="C"),"N.valid.hours"],main="N valid hours for Complete days",ylab="Hour")
+plot(d[which(d[,"missing"]=="M"),"N.valid.hours"],main="N valid hours for missing days",ylab="Hour")   
 print(paste("The minimum hour for complete days is ",min(d[which(d[,"missing"]=="C"),"N.valid.hours"]),sep=""))
 print(paste("The maximum hour for missing days is ",max(d[which(d[,"missing"]=="M"),"N.valid.hours"]),sep=""))
 

@@ -24,6 +24,8 @@ afterggir(
   PA.threshold = c(50, 100, 400),
   desiredtz = "US/Eastern",
   RemoveDaySleeper = FALSE,
+  part5FN = "WW_L50M125V500_T5A5",
+  NfileEachBundle = 20,
   trace = FALSE
 )
 }
@@ -65,6 +67,10 @@ afterggir(
 \item{desiredtz}{\code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern".}
 
 \item{RemoveDaySleeper}{\code{logical}  Specify if the daysleeper nights are removed from the calculation of number of valid days for each subject. Default is FALSE.}
+
+\item{part5FN}{\code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M125V500_T5A5", which means that part5_daysummary_WW_L50M125V500_T5A5.csv and part5_personsummary_WW_L50M125V500_T5A5.csv are used in the analysis.}
+
+\item{NfileEachBundle}{\code{number}  Number of files in each bundle when the csv data were read and processed in a cluster. Default is 20.}
 
 \item{trace}{\code{logical}  Specify if the intermediate results is printed when the function was executed. Default is FALSE.}
 }

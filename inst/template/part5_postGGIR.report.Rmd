@@ -1,5 +1,5 @@
 ---
-title: 'postGGIR: Data Processing and Exploratory Data Analysis with GGIR output'
+title: 'postGGIR part 5: Data Processing and Exploratory Data Analysis with GGIR output'
 author: "Wei Guo"
 date_xxx
 output:
@@ -108,7 +108,10 @@ kable(D1,caption="Table 1: Basic information"  )
 kable(D2[,-1],caption="Table 2: Summary of GGIR output")
 ```
 
-# 2. Check sleep status and daysleepers
+# 2. Check sleep status and daysleepers    
+   +  nightsleeper (sleep period did not overlap with noon) 
+   +  daysleeper (sleep period did overlap with noon, i.e. onset<36,wakeup>36)
+
 
 ```{r c3,echo=FALSE,fig.width=10,fig.height=4 }   
 E<-read.csv(summaryFN2,head=1,stringsAsFactors=F)
