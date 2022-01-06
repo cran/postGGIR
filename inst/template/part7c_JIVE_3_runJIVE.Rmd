@@ -239,8 +239,8 @@ write.csv(jive.out,file=jiveOutFN,row.names=F)
 The variation explained by joint structure and individual structure  
  
 ```{r,echo=FALSE} 
-summary(res) 
-plot(res)
+summary(res)  
+showVarExplained(res, col = c("#999999", "#E69F00", "#56B4E9"))
 ``` 
  
 

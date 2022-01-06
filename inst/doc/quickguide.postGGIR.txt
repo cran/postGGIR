@@ -51,7 +51,7 @@ The following files are created,
     run part7c_Example_postGGIR_JIVE_3_runJIVE.Rmd
     run part7d_Example_postGGIR_JIVE_4_somefeatures_weekday.Rmd
 
-(6) Submit all jobs to the cluster or run that one by one
+(6) Or Submit all jobs to a cluster  
 
 sbatch --time=100:00:00 --mem=120g    part9_swarm.sh   
 

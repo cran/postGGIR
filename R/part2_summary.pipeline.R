@@ -228,7 +228,7 @@ BD<-cbind(BD,IDerrors)
 # (3)   Nmissing days (read  d=part2_daysummary.csv)
 ##########################################################################################################  
 print("3) start to check Nmissing days based on columns 9 to 35.")
-mainC=9:35
+mainC=(grep("L5hr",colnames(d))[1]):ncol(d)     # default=9:35=ncol(d) for ggir2.4.0 example data
 NmainC<-length(mainC)
 idlist<-unique(d[,sortByid])
 ansM<-NULL

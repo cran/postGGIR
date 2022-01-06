@@ -90,7 +90,8 @@ library(kableExtra)
 setwd(currentdir) 
 
 feaFN<-system.file("template", "features.dictionary.xlsx", package = "postGGIR")  
-system(paste("cat ",feaFN," > ",outFN.anno,sep=""))
+# system(paste("cat ",feaFN," > ",outFN.anno,sep=""))
+file.copy(from=feaFN, to=outFN.anno, overwrite = TRUE)
 ```
 
 # 1 Read R features  

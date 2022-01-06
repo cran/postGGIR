@@ -20,9 +20,9 @@
 #' @param Rversion \code{character}  R version, eg. "R/3.6.3". Default is "R". 
 #' @param filename2id  \code{R function}  User defined function for converting filename to sample IDs. Default is NULL.  
 #' @param PA.threshold  \code{number}  Threshold for light, moderate and vigorous physical activity. Default is c(50,100,400).
-#' @param desiredtz \code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern". 
+#' @param desiredtz \code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern". Used in g.inspectfile() function to inspect acceleromether file for brand, sample frequency in part 2. 
 #' @param RemoveDaySleeper  \code{logical}  Specify if the daysleeper nights are removed from the calculation of number of valid days for each subject. Default is FALSE. 
-#' @param part5FN   \code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M125V500_T5A5", which means that part5_daysummary_WW_L50M125V500_T5A5.csv and part5_personsummary_WW_L50M125V500_T5A5.csv are used in the analysis. 
+#' @param part5FN   \code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M100V400_T5A5", which means that part5_daysummary_WW_L50M100V400_T5A5.csv and part5_personsummary_WW_L50M100V400_T5A5.csv are used in the analysis. 
 #' @param NfileEachBundle  \code{number}  Number of files in each bundle when the csv data were read and processed in a cluster. Default is 20. 
 #' @param trace  \code{logical}  Specify if the intermediate results is printed when the function was executed. Default is FALSE.
 #'
@@ -50,7 +50,7 @@
 
 
 afterggir<-function(mode,useIDs.FN=NULL,currentdir,studyname,bindir=NULL,
-outputdir, epochIn=5,epochOut=5,flag.epochOut=60,log.multiplier=9250,use.cluster=TRUE,QCdays.alpha=7,QChours.alpha=16,QCnights.feature.alpha=c(0,0), Rversion="R",filename2id=NULL,PA.threshold=c(50,100,400),desiredtz="US/Eastern",RemoveDaySleeper=FALSE,part5FN="WW_L50M125V500_T5A5",NfileEachBundle=20,trace=FALSE){
+outputdir, epochIn=5,epochOut=5,flag.epochOut=60,log.multiplier=9250,use.cluster=TRUE,QCdays.alpha=7,QChours.alpha=16,QCnights.feature.alpha=c(0,0), Rversion="R",filename2id=NULL,PA.threshold=c(50,100,400),desiredtz="US/Eastern",RemoveDaySleeper=FALSE,part5FN="WW_L50M100V400_T5A5",NfileEachBundle=20,trace=FALSE){
 
 print(paste("mode=",mode,sep="")) 
 print(paste("useIDs.FN=",useIDs.FN,sep="")) 
@@ -74,7 +74,23 @@ swFN2<-"part1_data.transform.merge.sw"
 nfeach<-NfileEachBundle # 20 #split in biowulf,~4-5 minutes/file 
 
 #-------------end fill-----------------------
- 
+######################################################################### 
+# (0) check input files 
+######################################################################### 
+print("0: Check input files for part1, part2 and part7................")
+p1.files<-paste(outputdir,c("/meta/basic", "/meta/csv"),sep="") 
+p2.files<-c(paste(outputdir,"/results/", c( "part2_daysummary", "part4_nightsummary_sleep_cleaned",
+          paste("part5_daysummary" ,"_",part5FN,sep="")),".csv",sep=""),   
+          paste(outputdir,"/results/QC/part4_nightsummary_sleep_full.csv", sep="")  ) 
+for (i in 1:length(p1.files)) {
+   nfiles<-length(list.files(path=p1.files[i]))
+   print(paste(i,": Found ",nfiles," input files in ",p1.files[i],sep=""))
+}
+for (i in 1:length(p2.files)){
+   nfiles<-file.exists(p2.files[i])
+   print(paste(i+length(p1.files),": ",ifelse(nfiles,"Found","Miss")," input files of ",p2.files[i],sep=""))
+} 
+
 ######################################################################### 
 # (1a) merge csv by parallel computing 
 ######################################################################### 
@@ -205,7 +221,7 @@ d1<-readLines(inFN1)
 for (i in 1:length(L)){
 S1<-which(gsub(" ", "", d1)==as.character(names(L)[i]))
 d1[S1]<-L[[i]]
-print(c(i,S1))
+#print(c(i,S1))
 }
 d1<-c(d1,tail)
 write(d1,file=outFN4,ncolumns=1) 

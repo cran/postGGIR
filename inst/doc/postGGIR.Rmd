@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
+library(knitr)
 ```
 
 
@@ -32,7 +32,26 @@ knitr::opts_chunk$set(
 [postGGIR](https://CRAN.R-project.org/package=postGGIR) is an R-package to data processing after running GGIR for accelerometer data. In detail, all necessary R/Rmd/shell files were generated for data processing after running GGIR for accelerometer data. Then in part 1, all csv files in the GGIR output directory were read, transformed and then merged. In part 2, the GGIR output files were checked and summarized in one excel sheet. In part 3, the merged data was cleaned according to the number of valid hours on each night and the number of valid days for each subject. In part 4, the cleaned activity data was imputed by the average ENMO over all the valid days for each subject. Finally, a comprehensive report of data processing was created using Rmarkdown, and the report includes few explortatory plots and multiple commonly used features extracted from minute level actigraphy data in part 5-7. This vignette provides a general introduction to postGGIR.
 
  
+ 
+## Software Architecture
 
+The R package postGGIR has been released with an open-source GPL-3 license on CRAN, and postGGIR can run on Windows and Linux. Parallel computing in Linux is recommended due to the memory requirements associated with reading in multiple of the large data files. The package contains one primary function for users which, when run, generates all necessary R/R Markdown/shell executable files for data processing after running GGIR for accelerometer data; load, read, transform and merge long activity data;  examine and summarize GGIR outputs; clean the merged activity data according to the number of valid hours per night and the number of valid days per subject; activity data imputation by taking the average across the valid days for each subject; build a comprehensive report of data processing and exploratory plots; extract multiple commonly used features and study feature structure by the covariance decomposition. Figure 1 presents a flowchart for each step in this process which is described in greater detail below. The procedure, R functions, inputs, and outputs are all described in this package vignette. In addition, more documentation and example data could be found in postGGIR repository on GitHub (URL: https://github.com/dora201888/postGGIR).          
+ 
+
+
+#
+Mirroring the GGIR structure of processing individual data files in multiple parts, the postGGIR package is split into seven parts, grouping functionalities in logical processing order. The parts are numbered from 1 to 7. Parts 1 to 4 are dedicated to data processing. Parts 5 to 7 are dedicated to producing R Markdown reports of data cleaning, feature extraction, and unsupervised covariance decomposition via the joint and individual variance explained (JIVE) method, respectively.  These seven parts are carried out sequentially with milestone data automatically being saved locally. To use postGGIR, the first step for users is to install and load the postGGIR package. Then, users run the create.postGGIR() function which creates a single R script. The newly created R script, Studyname_part0.maincall.R, is then edited by users, allowing for the specification of arguments relevant for each of the seven parts. All optional arguments and their defaults are described in the package vignette. In addition, for users with access to a cluster for parallel processing, a shell function, named as part9_swarm.sh is created which can parallelizes the processing of individual files with minor modifications by the user. These modifications are described in the package vignette.   Computationally, part 1 is the most time-consuming task, taking up at least 60% of the processing time, which the activity data in .csv format was transformed and merged.  Generally, part 1 takes about 10~30 minutes to process a file with 14 days of data recorded at 30 Hz on a GeneActiv device in processor cores of 36 x 2.3 GHz (Intel Gold 6140). All output created for each part is described in the package vignette. Briefly, part 1 and part 2 output are saved using a directory structure with a depth of two, containing output data and summary for all participants. The reports for parts 5 to 7 are saved in .html format and are generated using R Markdown (.Rmd) files. These .Rmd files are included in the output, users the flexibility to adapt the source code to their research purpose. 
+
+#
+**Figure 1: Overview of main steps and output in postGGIR workflow.**
+```{r pdfplot,  echo=F, out.width="700px", out.height="700px"}  
+include_graphics("figure1.workflow.pdf")  
+``` 
+
+
+## Software Dependencies
+
+All postGGIR code is written in R and reports generated in R Markdown. The R packages ActFrag and ActCR are used for the calculation of certain physical activity and circadian rhythmicity features. The R package r.jive is used to perform the feature interaction analysis and to study the joint and individual variation structure by JIVE. 
 
 # Setting up your work environment
 
@@ -307,25 +326,57 @@ filename2id | This user-defined function will change the filename of the raw acc
 
 # Software Functionalities  
 ## Part 1  
-The functions of part 1 read the activity data measured by Euclidian norm minus one (ENMO) in long csv-spreadsheets and then the data was merged and transformed into a square matrix for all subjects. To be noted, a day could have 23 or 25 hours when daylight saving time started or ended. The ENMO data would take the average for those duplicate timestamps caused by daylight saving time so as to be merged systematically with other regular 24-hour days.  In addition, the angle of the z-axis (ANGLEZ) relative to the horizontal plane (degrees) utilizing all three axes was also merged and saved into an excel file. Besides that, more data were output including the light mean, light peak, temperature mean and clipping score and Euclidian norm metric (EN) if available. All outputs were stored under the ./data directory for part 1.  
+The functions of part 1 read the activity data measured by Euclidian norm minus one (ENMO), a rotationally invariant measure of volume of acceleration, in long csv-spreadsheets and then the data was merged and transformed into a square matrix for all subjects.   Depending on the time zone on which the devices were initialized, a day may have either 23 or 25 due to daylights savings time. On daylight savings crossovers, ENMO is averaged for duplicate timestamps between 1:00 AM and 2:00 AM, allowing for straightforward comparisons to standard 24-hour days. In addition to recording ENMO at each epoch, the angle of the z-axis (ANGLEZ) relative to the horizontal plane (degrees), used for estimating sleep periods, is merged and saved into an excel file. Additional data recorded by certain device, including the light mean, light peak, temperature mean, clipping score, and the Euclidian norm metric (EN) if available are merged with the ENMO data and saved under the ./data directory for part 1.  
+
+
+
+
+The activity data in the GGIR output is formatted in long csv-spreadsheets as follows,  
+```{r,echo=F}
+input<-rbind(c("timestamp","ENMO","anglez"),
+             c("2017-11-30T00:00:00+0100",8e-04,-32.5758),
+             c("2017-11-30T00:00:05+0100",0.0198,-25.5726),
+             c("2017-11-30T00:00:10+0100",0.0177,3.7972),
+             c("2017-11-30T00:00:15+0100",0.0118,6.7154),
+             c("2017-11-30T00:00:20+0100",0.0106,10.0357),
+             c("2017-11-30T00:00:25+0100",0.0341,21.0143),
+             c("2017-11-30T00:00:30+0100",0.1708,19.5008),
+             c("......","......","......"),
+             c("2017-11-30T23:59:55+0100",0.1504,-0.596))
+
+
+output<-rbind(c( "Date","0:00:00","0:00:05","0:00:10","0:00:15","0:00:20","0:00:25","0:00:30","......","23:59:55"),
+              c( "11/30/2017","8.00E-04",0.0198,0.0177,0.0118,0.0106,0.0341,0.1708,"......",0.1504))
+kable(input)
+```
+
+Each row represents the corresponding ENMO and ANGLEZ values at a timestamp per 5 seconds epoch, which is specified by GGIR parameter (windowsizes) when running GGIR. After running part 1, the ENMO and ANGLEZ data are transformed into wide matrix in which each row represents 24 hours data for a day. For example, the ENMO data is formated as follows, 
+
+```{r,echo=F}
+kable(output)
+```
+
+Finally, the data was merged for all days and all subjects.
+ 
+
 
 ## Part 2  
-The functions of part 2 introduced some descriptive variables of all accelerometer files in the GGIR output. In part 2, an excel file was output under the ./summary directory, which includes nine pages as follows, 1) List of files in the GGIR output (2) Summary of numbers of output files (3) List of duplicate IDs (4) ID errors (5) Number of valid days (6) Table of number of valid/missing days (7) Missing pattern (8) Frequency of the missing pattern (9) Description of all accelerometer files.  Multiple plots were generated in a pdf file including the number of valid hours, days, missing pattern, etc.  Technically, the raw accelerometer data was visited to obtain a complete input list for the purpose of examining missingness of GGIR output when user specified the path. Additionally, the summary results from GGIR output were also visited here to form a comprehensive data quality report in the part 2 of postGGIR. 
+The functions of part 2 introduce descriptive variables of all accelerometer files in the GGIR output. In part 2, an excel file was output under the ./summary directory, which includes nine pages as follows, 1) List of files in the GGIR output (2) Summary of numbers of output files (3) List of duplicate IDs (4) ID errors (5) Number of valid days (6) Table of number of valid/missing days (7) Missing pattern (8) Frequency of the missing pattern (9) Description of all accelerometer files.  Multiple plots were generated in a pdf file including the number of valid hours, days, missing pattern, etc.  Technically, the raw accelerometer data was visited to obtain a complete input list for the purpose of examining missingness of GGIR output when user specified the path. Additionally, the summary results from GGIR output were also visited here to form a comprehensive data quality report in the part 2 of postGGIR.  
     
 ## Part 3 and Part 4  
-The functions of part 3 introduced some 'flag' variables for data cleaning of the merged ENMO and ANGLEZ data. As default, only days with more than 16 hours were marked as valid days and subjects with more than 7 valid days were marked as valid samples. User could specify these two parameters in the main function. Further, the data could be aggregated into minute-level or hour-level data as required by users. In part 4, the ENMO data was imputed by taking the subject-level mean over all the valid days for each subject. All output was stored under the ./data directory. In the output file, a few description variables were included as follows (1) the number of valid hours; (2) missing pattern for each subject; (3) non-wear time in minutes; (4) an indicator variable to indicate if the visit should be removed for having multiple visits and (5) the number of missing values after imputation. Samples were removed when systematic missingness was observed, i.e., the activity data was missing on same timestamps among all days and therefore could not be imputed.  
+The functions of part 3 introduce 'flag' variables for data cleaning of the merged ENMO and ANGLEZ data. By default, days with more than 16 hours were marked as valid days and subjects with more than 7 valid days were marked as valid samples. User can set these two parameters in the call to the main function (QCdays.alpha = 7, QChours.alpha = 16). Further, the data can be aggregated into minute-level or hour-level data as required by users. In part 4, ENMO data during estimated non-wear periods were imputed by taking the subject-level mean over all the valid days for each subject at that time. All output is saved under the ./data directory. In the output file, the following description variables are included: (1) number of valid hours; (2) missing pattern for each subject; (3) non-wear time in minutes; (4) an indicator variable to indicate if the visit should be removed for having multiple visits for some subjects which might lead to invalidity of independent and identically distribution in statistics and (5) the number of missing values after imputation. When the number of missing values after imputation is not zero, it means the activity data is missing on same timestamps among all days and therefore could not be imputed, therefore, such samples would be removed when systematic missingness was observed.  
 
 ## Part 5  
-The functions of part 5 generated a comprehensive report in the .html format, which included data quality check and an exploratory data analysis. In the report, first, the file lists were summarized in each GGIR folders and summary files so that user could easily check the missingness in each GGIR parts. Second, the duplicate samples were checked and marked, where the duplication might be caused by having multiply visits for some samples but only one visit will be kept in the data analysis such as functional principal component analysis (FPCA). Thirdly, as shown in Figure 1, data quality was checked such as the number of valid days, non-wear time and missing pattern, which was helpful to better understand the data by the graphical presentation. As an exploratory analysis, the data correlation, and the output of FPCA analysis was plotted in the report.
+The functions of part 5 generate a comprehensive report in .html format. The report includes data quality checks and an exploratory data analysis using valid days of data. First, the numbers and missingness of GGIR output files are summarized for all GGIR parts. Second, duplicate samples were checked and marked, where the duplication might be caused by having multiple visits for some samples but only one visit will be kept in the data analysis such as functional principal component analysis (FPCA). Third, as shown in Figure 1, data quality is presented visually using the number of valid days, non-wear time, and missing data pattern. As an exploratory analysis, the data correlation, and the output of FPCA analysis was plotted in the report.
 
 ## Part 6 (Optional) 
-The non-wear data was loaded from the M$metalong$nonwearscore variable of the R data that was stored in the folder of /meta/basic/meta of the GGIR output, and the matrix to clarify when data was imputed for each long epoch time window and the reason for imputation.  This function will generate a non-wear matrix at minute level, and it could be skipped if user chose to use the imputation data in the JIVE application as default.
+Estimated non-wear periods are loaded from  the $M\$metalong\$nonwearscore$ variable of the R data that was stored in the folder of /meta/basic of the GGIR output, which generate the matrix to clarify when data was imputed for each long epoch time window and the reason for imputation.  This function will generate a non-wear matrix at minute level, coded as 0/1 for wear/non-wear time.  This function will generate a non-wear matrix at minute level, and it could be skipped if user chose to use the imputation data in the JIVE application as default.
  
 ## Part 7  
-In part 7, about 100 features were extracted from minute level activity data of three domains of sleep, physical activity, and circadian rhythmicity, which were based on outputs from GGIR v2.4.0 and calculated by R ActFrag and ActCR packages (Di et al., 2019). The standard deviation across days on each subject was also created for each feature. The weekday and weekend specific features were extracted as well since most features in the sleep and physical activity showed significant difference between weekdays and weekends. In brief, sleep domain referred to sleep duration, midpoint, efficiency, etc. Physical activity referred to daily motor activity such as sedentary behavior, light, and moderate-to-vigorous physical activity (MVPA). Circadian rhythms were natural rhythms that regulates the sleep-wake cycle within every 24 hours. For example, the cosinor curve and FPCA analysis were used in modeling of biological rhythms. A comprehensive list of all features could be found in the supplementary table and the detailed definition could be found in the GGIR manual and Di et al.'s publication in 2019.
- 
-	
-	 
+
+In part 7, 88 features were extracted from minute level activity data of three domains of sleep, physical activity, and circadian rhythmicity, which were based on outputs from GGIR v2.4.0 and calculated by R ActFrag and ActCR packages. The standard deviation across days on each subject was also created for each feature. The weekday and weekend specific features were extracted as well since most features in the sleep and physical activity showed significant difference between weekdays and weekends. In brief, sleep domain referred to sleep duration, midpoint, efficiency, etc. Physical activity referred to daily motor activity such as sedentary behavior, light, and moderate-to-vigorous physical activity (MVPA). Circadian rhythms were natural rhythms that regulates the sleep-wake cycle within every 24 hours. For example, the cosinor curve and FPCA analysis were used in modeling of biological rhythms. A comprehensive list of all features could be found in the supplementary table and the detailed definition could be found in the GGIR manual and Di et al.'s publication in 2019.
+
+  
 	
 
 # Running postGGIR and Inspecting the results
@@ -625,5 +676,5 @@ R -e "rmarkdown::render('postGGIR.Rmd'   )"
 #
 # Reference 
     
- +  Wei Guo,  Vadim Zipunnikov, Andrew Leroux, PhD, Kathleen R Merikangas (2021) postGGIR: An Open-Source R/R-Markdown Package for Accelerometer Data Processing after Running GGIR. (Manuscript)  
+ +  Wei Guo, Andrew Leroux, Vadim Zipunnikov, Kathleen R Merikangas (2021) postGGIR: An Open-Source R/R-Markdown Package for Accelerometer Data Processing after Running GGIR. (Manuscript)  
   

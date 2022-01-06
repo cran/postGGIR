@@ -1,10 +1,12 @@
 Package: postGGIR
-Version: 2.4.0.1
-Date: 2021-10-01
+Version: 2.4.0.2
+Date: 2022-01-06
 Title: Data Processing after Running 'GGIR' for Accelerometer Data
 Authors@R: c(
     person(given = "Wei", family = "Guo", 
         role = c("aut", "cre"), email = "wei.guo3@nih.gov"), 
+    person(given = "Andrew", family = "Leroux", 
+        role = c("aut"), email = "andrew.leroux@cuanschutz.edu"), 
     person(given = "Vadim", family = "Zipunnikov", 
         role = c("aut"), email = "vzipunni@jhsph.edu"),  
     person(given = "Kathleen", family = "Merikangas",  
@@ -26,9 +28,10 @@ Type: Package
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2021-10-15 13:36:40 UTC; guow4
+Packaged: 2022-01-06 13:33:20 UTC; guow4
 Author: Wei Guo [aut, cre],
+  Andrew Leroux [aut],
   Vadim Zipunnikov [aut],
   Kathleen Merikangas [aut]
 Repository: CRAN
-Date/Publication: 2021-10-15 14:00:02 UTC
+Date/Publication: 2022-01-06 14:30:02 UTC

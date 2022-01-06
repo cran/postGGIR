@@ -24,7 +24,7 @@ afterggir(
   PA.threshold = c(50, 100, 400),
   desiredtz = "US/Eastern",
   RemoveDaySleeper = FALSE,
-  part5FN = "WW_L50M125V500_T5A5",
+  part5FN = "WW_L50M100V400_T5A5",
   NfileEachBundle = 20,
   trace = FALSE
 )
@@ -64,11 +64,11 @@ afterggir(
 
 \item{PA.threshold}{\code{number}  Threshold for light, moderate and vigorous physical activity. Default is c(50,100,400).}
 
-\item{desiredtz}{\code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern".}
+\item{desiredtz}{\code{charcter}  desired timezone: see also http://en.wikipedia.org/wiki/Zone.tab. Used in g.inspectfile(). Default is "US/Eastern". Used in g.inspectfile() function to inspect acceleromether file for brand, sample frequency in part 2.}
 
 \item{RemoveDaySleeper}{\code{logical}  Specify if the daysleeper nights are removed from the calculation of number of valid days for each subject. Default is FALSE.}
 
-\item{part5FN}{\code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M125V500_T5A5", which means that part5_daysummary_WW_L50M125V500_T5A5.csv and part5_personsummary_WW_L50M125V500_T5A5.csv are used in the analysis.}
+\item{part5FN}{\code{character}  Specify which output is used in the GGIR part5 results. Defaut is "WW_L50M100V400_T5A5", which means that part5_daysummary_WW_L50M100V400_T5A5.csv and part5_personsummary_WW_L50M100V400_T5A5.csv are used in the analysis.}
 
 \item{NfileEachBundle}{\code{number}  Number of files in each bundle when the csv data were read and processed in a cluster. Default is 20.}
 

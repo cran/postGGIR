@@ -15,7 +15,7 @@ filename2id.1<-function(x)  unlist(strsplit(y1,"\\."))[1]
  
 #  example 2 (use csv file =c("filename","ggirID")) 
 filename2id.2<-function(x) {
-  d<-read.csv("./postGGIR/inst/example/filename2id.csv",head=1,stringsAsFactors=F)
+  d<-read.csv("./postGGIR/inst/extdata/example/filename2id.csv",head=1,stringsAsFactors=F)
   y1<-which(d[,"filename"]==x)
   if (length(y1)==0) stop(paste("Missing ",x," in filename2id.csv file",sep=""))
   if (length(y1)>=1) y2<-d[y1[1],"newID"] 
